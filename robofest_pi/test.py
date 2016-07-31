@@ -16,7 +16,7 @@ def movement_test():
     sleep(1)
 
     control.turn_right()
-    sleep()
+    sleep(1)
 
     control.turn_back()
     sleep(1)
