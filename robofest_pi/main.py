@@ -1,6 +1,9 @@
 import cv2
+import test
 
-cam = cv2.VideoCapture(0)
+cam = cv2.VideoCapture(0)       # Capture the feed from camera
+
+test.movement_test()
 
 while True:
     ret, frame = cam.read()
