@@ -4,7 +4,6 @@ from time import sleep
 
 def movement_test():
     robot = movement.Robot()
-    pid = movement.PID(robot)
     control = movement.Control(robot)
 
     control.forward()
