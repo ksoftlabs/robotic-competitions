@@ -1,3 +1,6 @@
+import communicate
+
+
 class Robot:
     def __init__(self):
         self.lf = 0     # Left-front motor speed
@@ -9,8 +12,8 @@ class Robot:
 class PID:
     def __init__(self, robot):
         self.robot = robot
-        self.base_speed = 150
-        self.pVar, self.iVar, self.dVar = 0.0, 0.0, 0.0
+        self.base_speed = 150                               # Speed when moving straight >> affect the average speed
+        self.pVar, self.iVar, self.dVar = 0.0, 0.0, 0.0     # Proportional, Integral and Derivative values
         self.kp, self.ki, self.kd = 0.0, 0.0, 0.0           # Proportional, Integral and Derivative constants
         self.error = 0.0                                    # Current error
         self.pre_error = 0.0                                # Previous error
@@ -46,22 +49,17 @@ class PID:
 class Control:
     def __init__(self, robot):
         self.robot = robot
-        self.positive_thresh, self.negative_thresh = 110, -110      # Threshold levels which the dc motors work
+        self.comm = communicate.Port()
+        self.positive_thresh = 110              # Minimum forward power level which the dc motors work
+        self.negative_thresh = -110             # Minimum reverse power level which the dc motors work
 
-    # Change the stall state motor speed values
-    def adjust_speed(self):
-        diff = (self.positive_thresh - self.negative_thresh)
-        if self.robot.lf < self.positive_thresh:
-            self.robot.lf -= diff
-        if self.robot.rf < self.positive_thresh:
-            self.robot.rf -= diff
-        if self.robot.lb < self.positive_thresh:
-            self.robot.lb -= diff
-        if self.robot.rb < self.positive_thresh:
-            self.robot.rb -= diff
+    # Control the motor speeds
+    def drive(self, lf, rf, lb, rb):
+        self.robot.lf = lf
+        self.robot.rf = rf
+        self.robot.lb = lb
+        self.robot.rb = rb
 
-    # Control the motor speeds with the current values in the robot object
-    def drive(self):
         # Verify whether motor power values are in range of -255 and 255
         if self.robot.lf > 255:
             self.robot.lf = 255
@@ -82,3 +80,23 @@ class Control:
             self.robot.rb = 255
         elif self.robot.rb < -255:
             self.robot.rb = -255
+
+        # Change the power level if motors are in stall state
+        diff = (self.positive_thresh - self.negative_thresh)
+        if self.robot.lf < self.positive_thresh & self.robot.lf > self.negative_thresh:
+            self.robot.lf -= diff
+        if self.robot.rf < self.positive_thresh & self.robot.rf > self.negative_thresh:
+            self.robot.rf -= diff
+        if self.robot.lb < self.positive_thresh & self.robot.lb > self.negative_thresh:
+            self.robot.lb -= diff
+        if self.robot.rb < self.positive_thresh & self.robot.rb > self.negative_thresh:
+            self.robot.rb -= diff
+
+        self.comm.change_speed(self.robot.lf, self.robot.rf, self.robot.lb, self.robot.rb)
+
+    def forward(self, speed):
+        self.drive(abs(speed), abs(speed), abs(speed), abs(speed))
+
+    def reverse(self, speed):
+        self.drive(-1 * abs(speed), -1 * abs(speed), -1 * abs(speed), -1 * abs(speed))
+

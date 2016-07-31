@@ -1,8 +1,4 @@
 import cv2
-import maze
-import box
-import path
-import control
 
 cam = cv2.VideoCapture(0)
 
