@@ -7,5 +7,5 @@ while True:
 
     cv2.imshow('Feed', frame)
 
-    if cv2.waitKey(1) == 27:
+    if cv2.waitKey(1) % 256 == 27:
         break
