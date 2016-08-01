@@ -20,7 +20,7 @@ while True:
 
 
     #box.detect_box(frame, return_frame)
-    path.detect_arrow(frame, return_frame, (np.array([0,0,255]), np.array([70,130,180])))
+    path.detect_arrow(frame, return_frame, (np.array([40,100,100]), np.array([255,255,255])))
 
 
 
