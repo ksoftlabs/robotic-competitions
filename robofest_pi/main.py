@@ -14,13 +14,7 @@ while True:
 
 
 
-
-
-
-
     box.detect_box(frame, return_frame)
-
-
 
 
 
