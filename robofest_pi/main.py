@@ -9,12 +9,26 @@ while True:
     ret, frame = cam.read()
     # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     # gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    output = np.zeros(frame.shape, np.uint8)
+    return_frame = np.zeros(frame.shape, np.uint8)
 
-    box.detect_box(frame, output)
+
+
+
+
+
+
+
+    box.detect_box(frame, return_frame)
+
+
+
+
+
+
+
 
     cv2.imshow('Feed', frame)
-    cv2.imshow('Processed feed', output)
+    cv2.imshow('Processed feed', return_frame)
 
     if cv2.waitKey(1) % 256 == 27:
         break
