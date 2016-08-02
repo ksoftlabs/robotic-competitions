@@ -2,7 +2,8 @@
 import cv2
 import numpy as np
 
-def detect_maze(self, frame, output): #why are we taking self here ?
+
+def detect_maze(frame, output):
     return output
 
 
