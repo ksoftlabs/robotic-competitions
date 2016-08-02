@@ -1,9 +1,11 @@
 import movement
 from time import sleep
 
+import physics
+
 
 def movement_test():
-    robot = movement.Robot()
+    robot = physics.Robot()
     control = movement.Control(robot)
 
     control.forward()

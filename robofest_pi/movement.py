@@ -1,13 +1,5 @@
-import communicate
 from time import sleep
-
-
-class Robot:
-    def __init__(self):
-        self.lf = 0     # Left-front motor speed
-        self.rf = 0     # Right-front motor speed
-        self.lb = 0     # Left-back motor speed
-        self.rb = 0     # Right-back motor speed
+import communicate
 
 
 class PID:
@@ -42,10 +34,10 @@ class PID:
         self.dVar = (self.error - self.pre_error) * self.kd
 
         self.turn = self.pVar + self.iVar + self.dVar
-        self.robot.lf = self.base_speed - self.turn
-        self.robot.rf = self.base_speed + self.turn
-        self.robot.lb = self.base_speed - self.turn
-        self.robot.rb = self.base_speed + self.turn
+        self.robot.lf_motor = self.base_speed - self.turn
+        self.robot.rf_motor = self.base_speed + self.turn
+        self.robot.lb_motor = self.base_speed - self.turn
+        self.robot.rb_motor = self.base_speed + self.turn
 
 
 class Control:
@@ -56,43 +48,43 @@ class Control:
         self.negative_thresh = -110         # Minimum reverse power level which the dc motors work
 
     # Control the motor speeds
-    def drive(self, lf, rf, lb, rb):
-        self.robot.lf = lf
-        self.robot.rf = rf
-        self.robot.lb = lb
-        self.robot.rb = rb
+    def drive(self, lf_motor, rf_motor, lb_motor, rb_motor):
+        self.robot.lf_motor = lf_motor
+        self.robot.rf_motor = rf_motor
+        self.robot.lb_motor = lb_motor
+        self.robot.rb_motor = rb_motor
 
         # Change the power level if motors are in stall state
         diff = (self.positive_thresh - self.negative_thresh)
-        if self.robot.lf < self.positive_thresh & self.robot.lf > self.negative_thresh:
-            self.robot.lf -= diff
-        if self.robot.rf < self.positive_thresh & self.robot.rf > self.negative_thresh:
-            self.robot.rf -= diff
-        if self.robot.lb < self.positive_thresh & self.robot.lb > self.negative_thresh:
-            self.robot.lb -= diff
-        if self.robot.rb < self.positive_thresh & self.robot.rb > self.negative_thresh:
-            self.robot.rb -= diff
+        if self.robot.lf_motor < self.positive_thresh & self.robot.lf_motor > self.negative_thresh:
+            self.robot.lf_motor -= diff
+        if self.robot.rf_motor < self.positive_thresh & self.robot.rf_motor > self.negative_thresh:
+            self.robot.rf_motor -= diff
+        if self.robot.lb_motor < self.positive_thresh & self.robot.lb_motor > self.negative_thresh:
+            self.robot.lb_motor -= diff
+        if self.robot.rb_motor < self.positive_thresh & self.robot.rb_motor > self.negative_thresh:
+            self.robot.rb_motor -= diff
 
         # Verify whether motor power values are in range of -255 and 255
-        if self.robot.lf > 255:
-            self.robot.lf = 255
-        elif self.robot.lf < -255:
-            self.robot.lf = -255
+        if self.robot.lf_motor > 255:
+            self.robot.lf_motor = 255
+        elif self.robot.lf_motor < -255:
+            self.robot.lf_motor = -255
 
-        if self.robot.rf > 255:
-            self.robot.rf = 255
-        elif self.robot.rf < -255:
-            self.robot.rf = -255
+        if self.robot.rf_motor > 255:
+            self.robot.rf_motor = 255
+        elif self.robot.rf_motor < -255:
+            self.robot.rf_motor = -255
 
-        if self.robot.lb > 255:
-            self.robot.lb = 255
-        elif self.robot.lb < -255:
-            self.robot.lb = -255
+        if self.robot.lb_motor > 255:
+            self.robot.lb_motor = 255
+        elif self.robot.lb_motor < -255:
+            self.robot.lb_motor = -255
 
-        if self.robot.rb > 255:
-            self.robot.rb = 255
-        elif self.robot.rb < -255:
-            self.robot.rb = -255
+        if self.robot.rb_motor > 255:
+            self.robot.rb_motor = 255
+        elif self.robot.rb_motor < -255:
+            self.robot.rb_motor = -255
 
         self.comm.change_speed(self.robot.lf, self.robot.rf, self.robot.lb, self.robot.rb)
 
