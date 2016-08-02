@@ -1,7 +1,6 @@
+import physics
 import movement
 from time import sleep
-
-import physics
 
 
 def movement_test():

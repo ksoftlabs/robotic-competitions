@@ -14,9 +14,7 @@ cam = cv2.VideoCapture(0)       # Capture the feed from camera
 comm = communicate.Port()
 robot = physics.Robot(comm)
 pid = movement.PID(robot)
-control = movement.Control(robot)
-
-
+control = movement.Control(robot, comm)
 decision = logic.Decision(robot)
 
 while True:
@@ -29,6 +27,9 @@ while True:
     cv2.imshow('Feed', frame)
     cv2.imshow('Processed feed', return_frame)
 
+    pid.run_pid(return_frame)
+    control.drive_current()
+
     if cv2.waitKey(1) % 256 == 27:
         break
 
@@ -39,6 +40,6 @@ while True:
     #
     # All the testing code go after this #########################################################################
 
-    box.detect_box(frame, return_frame)
+    # box.detect_box(frame, return_frame)
 
 

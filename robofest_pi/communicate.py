@@ -1,6 +1,3 @@
-import serial
-
-
 class Port:
     def __init__(self):
         print 'Initializing port communication....'

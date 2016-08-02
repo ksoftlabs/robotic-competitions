@@ -1,5 +1,4 @@
 from time import sleep
-import communicate
 
 
 class PID:
@@ -41,9 +40,9 @@ class PID:
 
 
 class Control:
-    def __init__(self, robot):
+    def __init__(self, robot, comm):
         self.robot = robot
-        self.comm = communicate.Port()
+        self.comm = comm
         self.positive_thresh = 110          # Minimum forward power level which the dc motors work
         self.negative_thresh = -110         # Minimum reverse power level which the dc motors work
 
@@ -56,13 +55,13 @@ class Control:
 
         # Change the power level if motors are in stall state
         diff = (self.positive_thresh - self.negative_thresh)
-        if self.robot.lf_motor < self.positive_thresh & self.robot.lf_motor > self.negative_thresh:
+        if (self.robot.lf_motor < self.positive_thresh) & (self.robot.lf_motor > self.negative_thresh):
             self.robot.lf_motor -= diff
-        if self.robot.rf_motor < self.positive_thresh & self.robot.rf_motor > self.negative_thresh:
+        if (self.robot.rf_motor < self.positive_thresh) & (self.robot.rf_motor > self.negative_thresh):
             self.robot.rf_motor -= diff
-        if self.robot.lb_motor < self.positive_thresh & self.robot.lb_motor > self.negative_thresh:
+        if (self.robot.lb_motor < self.positive_thresh) & (self.robot.lb_motor > self.negative_thresh):
             self.robot.lb_motor -= diff
-        if self.robot.rb_motor < self.positive_thresh & self.robot.rb_motor > self.negative_thresh:
+        if (self.robot.rb_motor < self.positive_thresh) & (self.robot.rb_motor > self.negative_thresh):
             self.robot.rb_motor -= diff
 
         # Verify whether motor power values are in range of -255 and 255
@@ -86,7 +85,10 @@ class Control:
         elif self.robot.rb_motor < -255:
             self.robot.rb_motor = -255
 
-        self.comm.change_speed(self.robot.lf, self.robot.rf, self.robot.lb, self.robot.rb)
+        self.comm.change_speed(self.robot.lf_motor, self.robot.rf_motor, self.robot.lb_motor, self.robot.rb_motor)
+
+    def drive_current(self):
+        self.drive(self.robot.lf_motor, self.robot.rf_motor, self.robot.lb_motor, self.robot.rb_motor)
 
     def forward(self, speed=150, t=0.1):
         speed = abs(speed)
