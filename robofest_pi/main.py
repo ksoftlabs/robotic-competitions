@@ -15,13 +15,9 @@ while True:
 
 
 
-
-<<<<<<< HEAD
-
-=======
     #box.detect_box(frame, return_frame)
     path.detect_arrow(frame, return_frame, (np.array([40,100,100]), np.array([255,255,255])))
->>>>>>> e43c476a294038921b254f3e08b552b491579aaf
+
 
 
 
