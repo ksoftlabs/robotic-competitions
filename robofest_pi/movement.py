@@ -20,14 +20,14 @@ class PID:
         self.pre_error = 0.0                                # Previous error
         self.turn = 0.0
 
-    def calculate_error(self):
+    def calculate_error(self, frame):
         self.pre_error = self.error
         ###########################
         # Calculate the new error #
         ###########################
 
-    def run_pid(self):
-        self.calculate_error()
+    def run_pid(self, frame):
+        self.calculate_error(frame)
 
         # Calculate P
         self.pVar = self.kp * self.error
