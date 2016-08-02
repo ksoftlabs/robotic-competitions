@@ -3,8 +3,9 @@ import cv2
 def filter_color(frame, color, window_name):#color range as a tuple
     hsv_frame = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
     image_mask=cv2.inRange(hsv_frame,color[0],color[1])
-    rframe=cv2.bitwise_and(hsv_frame,frame,hsv_frame,mask=image_mask)
-    cv2.imshow("Color Filter "+ window_name, rframe)
+    rframe=cv2.bitwise_and(frame,frame,mask=image_mask)
+    cv2.imshow("Mask "+ window_name,image_mask)
+    #cv2.imshow("Color Filter "+ window_name, rframe)
     rframe = cv2.cvtColor(rframe, cv2.COLOR_BGR2GRAY)
     return rframe
 
