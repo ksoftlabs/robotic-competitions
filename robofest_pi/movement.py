@@ -47,11 +47,15 @@ class Control:
         self.negative_thresh = -110         # Minimum reverse power level which the dc motors work
 
     # Control the motor speeds
-    def drive(self, lf_motor, rf_motor, lb_motor, rb_motor):
-        self.robot.lf_motor = lf_motor
-        self.robot.rf_motor = rf_motor
-        self.robot.lb_motor = lb_motor
-        self.robot.rb_motor = rb_motor
+    def drive(self, lf_motor=None, rf_motor=None, lb_motor=None, rb_motor=None):
+        if lf_motor is not None:
+            self.robot.lf_motor = lf_motor
+        if rf_motor is not None:
+            self.robot.rf_motor = rf_motor
+        if lb_motor is not None:
+            self.robot.lb_motor = lb_motor
+        if rb_motor is not None:
+            self.robot.rb_motor = rb_motor
 
         # Change the power level if motors are in stall state
         diff = (self.positive_thresh - self.negative_thresh)
@@ -87,9 +91,6 @@ class Control:
 
         self.comm.change_speed(self.robot.lf_motor, self.robot.rf_motor, self.robot.lb_motor, self.robot.rb_motor)
 
-    def drive_current(self):
-        self.drive(self.robot.lf_motor, self.robot.rf_motor, self.robot.lb_motor, self.robot.rb_motor)
-
     def forward(self, speed=150, t=0.1):
         speed = abs(speed)
         self.drive(speed, speed, speed, speed)
@@ -114,3 +115,15 @@ class Control:
         speed = abs(speed)
         self.drive(speed, -1 * speed, speed, -1 * speed)
         sleep(t)
+
+    def brake(self):
+        pass
+
+    def stop(self):
+        pass
+
+    def lift_the_box(self):
+        print 'Lifting the box....'
+
+    def place_the_box(self):
+        print 'Placing the box....'
