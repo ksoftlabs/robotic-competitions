@@ -1,20 +1,19 @@
 import cv2
-import physics
-import movement
+import box_logic
 import communicate
 import maze_logic
-import box
-import path
-import test
-import temp_logic
-
+import movement
+import path_logic
+import physics
 
 comm = communicate.Port()                   # Raspberry pi - Arduino serial communication interface
-robot = physics.Robot(comm)
-pid = movement.PID(robot)
-control = movement.Control(robot, comm)
+robot = physics.Robot(comm)                 # Define current robot state
+pid = movement.PID(robot)                   # Adjust course through pid
+control = movement.Control(robot, comm)     # Robot movement controls
 
-maze = maze_logic.Maze(robot)
+maze = maze_logic.Maze(robot)               # Maze logic
+box = box_logic.Box(robot)                  # Box logic
+path = path_logic.Path(robot)               # Path logic
 
 while True:
     robot.see()
@@ -22,11 +21,13 @@ while True:
     if robot.state == 'maze':
         robot.update_sonar_data()
 
-        if temp_logic.is_box_seen():
-            if temp_logic.is_box_totally_visible():
+        if box.is_box_seen():
+            if box.is_box_totally_visible():
                 robot.state = 'box_lift'
-            elif temp_logic.is_box_partially_visible():
-                # Adjust the course
+            elif box.is_box_partially_visible():
+                #####################
+                # Adjust the course #
+                #####################
                 pass
         elif maze.is_on_junction():
             if maze.is_left_open():
@@ -64,14 +65,5 @@ while True:
 
     if cv2.waitKey(1) % 256 == 27:
         break
-
-    #
-    #
-    #
-    #
-    #
-    # All the testing code go after this #########################################################################
-
-    # box.detect_box(frame, return_frame)
 
 
