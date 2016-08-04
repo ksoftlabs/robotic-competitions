@@ -1,54 +1,62 @@
 import cv2
-import numpy as np
-import logic
 import physics
 import movement
 import communicate
-import maze
+import maze_logic
 import box
 import path
 import test
+import temp_logic
 
 
 comm = communicate.Port()                   # Raspberry pi - Arduino serial communication interface
 robot = physics.Robot(comm)
 pid = movement.PID(robot)
 control = movement.Control(robot, comm)
-decision = logic.Decision(robot)
+
+maze = maze_logic.Maze(robot)
 
 while True:
     robot.see()
 
-    if decision.state == 'maze':
+    if robot.state == 'maze':
         robot.update_sonar_data()
 
-        if decision.is_box_seen():
-            # Adjust robot
-            pass
-        elif decision.is_on_junction():
-            # Junction work
-            pass
-        elif decision.is_on_end():
-            # End work
-            pass
+        if temp_logic.is_box_seen():
+            if temp_logic.is_box_totally_visible():
+                robot.state = 'box_lift'
+            elif temp_logic.is_box_partially_visible():
+                # Adjust the course
+                pass
+        elif maze.is_on_junction():
+            if maze.is_left_open():
+                control.turn_left()
+            elif maze.is_front_open():
+                control.forward(t=0.5)
+            elif maze.is_right_open():
+                control.turn_right()
+        elif maze.is_on_end():
+            control.turn_back()
+        else:
+            control.stop()  # Logic error
 
-    elif decision.state == 'box_lift':
+    elif robot.state == 'box_lift':
         ######################################
         # Position the robot to lift the box #
         ######################################
         control.lift_the_box()
-    elif decision.state == 'path':
+    elif robot.state == 'path':
         #######################################################
         # Process the frame to create a path from arrow heads #
         #######################################################
         pid.run_pid(robot.processed_frame)
         control.drive()
-    elif decision.state == 'box_place':
+    elif robot.state == 'box_place':
         #######################################
         # Position the robot to place the box #
         #######################################
         control.place_the_box()
-    else:       # state == 'stop'
+    else:       # state == 'stop' or unknown state
         control.stop()
 
     cv2.imshow('Feed', robot.current_frame)

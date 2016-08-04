@@ -103,17 +103,17 @@ class Control:
         self.drive(speed, speed, speed, speed)
         sleep(t)
 
-    def reverse(self, speed=130, t=0.01):
+    def reverse(self, speed=130, t=0.1):
         speed = abs(speed)
         self.drive(-1 * speed, -1 * speed, -1 * speed, -1 * speed)
         sleep(t)
 
-    def turn_left(self, speed=170, t=0.01):
+    def turn_left(self, speed=170, t=0.5):
         speed = abs(speed)
         self.drive(-1 * speed, speed, -1 * speed, speed)
         sleep(t)
 
-    def turn_right(self, speed=170, t=0.01):
+    def turn_right(self, speed=170, t=0.5):
         speed = abs(speed)
         self.drive(speed, -1 * speed, speed, -1 * speed)
         sleep(t)

@@ -16,6 +16,8 @@ class Robot:
 
         self.comm = comm
 
+        self.state = 'maze'
+
         self.lf_motor = 0     # Left-front motor speed
         self.rf_motor = 0     # Right-front motor speed
         self.lb_motor = 0     # Left-back motor speed
