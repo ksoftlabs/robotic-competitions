@@ -25,19 +25,47 @@ while True:
     robot.see()
     start = time.time()
 
+    # Contours
     frame_hsv = cv2.cvtColor(robot.current_frame, cv2.COLOR_BGR2HSV)
 
     lower_red = np.array([0, 50, 50])
     upper_red = np.array([10, 255, 255])
-    lower_mask = cv2.inRange(frame_hsv, lower_red, upper_red)
+    lower_red_mask = cv2.inRange(frame_hsv, lower_red, upper_red)
 
     lower_red = np.array([170, 50, 50])
     upper_red = np.array([180, 255, 255])
-    upper_mask = cv2.inRange(frame_hsv, lower_red, upper_red)
+    upper_red_mask = cv2.inRange(frame_hsv, lower_red, upper_red)
 
-    img_mask = lower_mask + upper_mask
+    lower_green = np.array([80, 50, 50])
+    upper_green = np.array([160, 255, 255])
+    green_mask = cv2.inRange(frame_hsv, lower_green, upper_green)
+
+    lower_blue = np.array([160, 50, 50])
+    upper_blue = np.array([260, 255, 255])
+    blue_mask = cv2.inRange(frame_hsv, lower_blue, upper_blue)
+
+    img_mask = lower_red_mask + upper_red_mask + green_mask + blue_mask
 
     robot.processed_frame = cv2.bitwise_and(robot.current_frame, robot.current_frame, mask=img_mask)
+
+    rgb = cv2.cvtColor(robot.processed_frame, cv2.COLOR_HSV2RGB)
+    gray = cv2.cvtColor(robot.processed_frame, cv2.COLOR_RGB2GRAY)
+    ret, thresh = cv2.threshold(gray, 70, 255, cv2.THRESH_BINARY)
+
+    # Otsu's thresholding
+    ret2,thresh2 = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+
+    # Otsu's thresholding after Gaussian filtering
+    blur = cv2.GaussianBlur(gray,(5,5),0)
+    ret3,thresh3 = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+
+    _, contours, _ = cv2.findContours(thresh3, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    cv2.drawContours(robot.processed_frame, contours, -1, (0, 0, 255), 2)
+
+    # Canny
+    # robot.processed_frame = cv2.Canny(robot.current_frame,50,300,L2gradient=False)
+    # robot.processed_frame = cv2.Canny(robot.current_frame,100,150,L2gradient=True)
 
     end = time.time()
     diff = end - start
