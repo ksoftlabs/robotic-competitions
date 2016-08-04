@@ -1,3 +1,4 @@
+import cv2
 import numpy as np
 
 
@@ -8,11 +9,12 @@ class Robot:
         self.width = 0.0
         self.height = 0.0
 
-        self.cam = cam
-        self.comm = comm
-
+        # Capture the feed from camera
+        self.cam = cv2.VideoCapture(0)
         self.ret, self.current_frame = self.cam.read()
         self.processed_frame = np.zeros(self.current_frame.shape, np.uint8)
+
+        self.comm = comm
 
         self.lf_motor = 0     # Left-front motor speed
         self.rf_motor = 0     # Right-front motor speed

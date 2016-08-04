@@ -98,12 +98,12 @@ class Control:
 
         self.comm.change_speed(self.robot.lf_motor, self.robot.rf_motor, self.robot.lb_motor, self.robot.rb_motor)
 
-    def forward(self, speed=150, t=0.1):
+    def forward(self, speed=150, t=0.01):
         speed = abs(speed)
         self.drive(speed, speed, speed, speed)
         sleep(t)
 
-    def reverse(self, speed=130, t=0.1):
+    def reverse(self, speed=130, t=0.01):
         speed = abs(speed)
         self.drive(-1 * speed, -1 * speed, -1 * speed, -1 * speed)
         sleep(t)

@@ -9,9 +9,9 @@ import box
 import path
 import test
 
-cam = cv2.VideoCapture(0)                   # Capture the feed from camera
+
 comm = communicate.Port()                   # Raspberry pi - Arduino serial communication interface
-robot = physics.Robot(cam, comm)
+robot = physics.Robot(comm)
 pid = movement.PID(robot)
 control = movement.Control(robot, comm)
 decision = logic.Decision(robot)
