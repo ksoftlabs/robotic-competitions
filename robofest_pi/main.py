@@ -9,21 +9,29 @@ import box
 import path
 import test
 
-cam = cv2.VideoCapture(0)       # Capture the feed from camera
-
-comm = communicate.Port()
-robot = physics.Robot(comm)
+cam = cv2.VideoCapture(0)                   # Capture the feed from camera
+comm = communicate.Port()                   # Raspberry pi - Arduino serial communication interface
+robot = physics.Robot(cam, comm)
 pid = movement.PID(robot)
 control = movement.Control(robot, comm)
 decision = logic.Decision(robot)
 
 while True:
-    ret, frame = cam.read()
-    return_frame = np.zeros(frame.shape, np.uint8)
+    robot.see()
 
     if decision.state == 'maze':
         robot.update_sonar_data()
-        
+
+        if decision.is_box_seen():
+            # Adjust robot
+            pass
+        elif decision.is_on_junction():
+            # Junction work
+            pass
+        elif decision.is_on_end():
+            # End work
+            pass
+
     elif decision.state == 'box_lift':
         ######################################
         # Position the robot to lift the box #
@@ -33,7 +41,7 @@ while True:
         #######################################################
         # Process the frame to create a path from arrow heads #
         #######################################################
-        pid.run_pid(return_frame)
+        pid.run_pid(robot.processed_frame)
         control.drive()
     elif decision.state == 'box_place':
         #######################################
@@ -43,8 +51,8 @@ while True:
     else:       # state == 'stop'
         control.stop()
 
-    cv2.imshow('Feed', frame)
-    cv2.imshow('Processed feed', return_frame)
+    cv2.imshow('Feed', robot.current_frame)
+    cv2.imshow('Processed feed', robot.processed_frame)
 
     if cv2.waitKey(1) % 256 == 27:
         break

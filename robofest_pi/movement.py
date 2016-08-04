@@ -4,21 +4,28 @@ from time import sleep
 class PID:
     def __init__(self, robot):
         self.robot = robot
-        self.base_speed = 150                               # Speed when moving straight >> affect the average speed
+        self.base_speed = 150                               # Speed when moving straight :- affect the average speed
         self.pVar, self.iVar, self.dVar = 0.0, 0.0, 0.0     # Proportional, Integral and Derivative values
         self.kp, self.ki, self.kd = 0.0, 0.0, 0.0           # Proportional, Integral and Derivative constants
-        self.error = 0.0                                    # Current error
+        self.error = 0.0                                    # -10 <= Current error <= 10
         self.pre_error = 0.0                                # Previous error
         self.turn = 0.0
 
-    def calculate_error(self, frame):
+    def calculate_frame_error(self, frame):
         self.pre_error = self.error
         ###########################
         # Calculate the new error #
         ###########################
 
-    def run_pid(self, frame):
-        self.calculate_error(frame)
+    def calculate_sonar_error(self):
+        total_width = self.robot.left_sonar + self.robot.width + self.robot.right_sonar
+        self.error = self.robot.left_sonar / total_width * 20 - 10.0
+
+    def run_pid(self, frame=None):
+        if frame is None:
+            self.calculate_sonar_error()
+        else:
+            self.calculate_frame_error(frame)
 
         # Calculate P
         self.pVar = self.kp * self.error
@@ -33,9 +40,9 @@ class PID:
         self.dVar = (self.error - self.pre_error) * self.kd
 
         self.turn = self.pVar + self.iVar + self.dVar
-        self.robot.lf_motor = self.base_speed - self.turn
+        self.robot.lf_motor = self.base_speed + self.turn
         self.robot.rf_motor = self.base_speed + self.turn
-        self.robot.lb_motor = self.base_speed - self.turn
+        self.robot.lb_motor = self.base_speed + self.turn
         self.robot.rb_motor = self.base_speed + self.turn
 
 
