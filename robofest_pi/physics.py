@@ -3,7 +3,7 @@ import numpy as np
 
 
 class Robot:
-    def __init__(self, cam, comm):
+    def __init__(self, comm):
         # Dimensions
         self.length = 0.0
         self.width = 0.0

@@ -15,6 +15,21 @@ maze = maze_logic.Maze(robot)               # Maze logic
 box = box_logic.Box(robot)                  # Box logic
 path = path_logic.Path(robot)               # Path logic
 
+#################################################################################################################
+# Testing area
+while True:
+    robot.see()
+
+
+
+    cv2.imshow('Feed', robot.current_frame)
+    cv2.imshow('Processed feed', robot.processed_frame)
+
+    if cv2.waitKey(1) % 256 == 27:
+        break
+exit(0)
+##################################################################################################################
+
 while True:
     robot.see()
 
