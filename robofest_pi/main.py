@@ -11,7 +11,7 @@ import time
 import psutil
 
 comm = communicate.Port()                   # Raspberry pi - Arduino serial communication interface
-robot = physics.Robot(comm)                 # Define current robot state
+robot = physics.Robot(comm, android=True)   # Define current robot state
 pid = movement.PID(robot)                   # Adjust course through pid
 control = movement.Control(robot, comm)     # Robot movement controls
 
@@ -92,6 +92,8 @@ while True:
 
     if cv2.waitKey(1) % 256 == 27:
         break
+robot.cam.release()
+cv2.destroyAllWindows()
 exit(0)
 ##################################################################################################################
 
@@ -146,4 +148,6 @@ while True:
     if cv2.waitKey(1) % 256 == 27:
         break
 
+robot.cam.release()
+cv2.destroyAllWindows()
 

@@ -4,22 +4,25 @@ from AndroidCamFeed import AndroidCamFeed
 
 
 class Robot:
-    def __init__(self, comm):
+    def __init__(self, comm, android=False):
         # Dimensions
         self.length = 0.0
         self.width = 0.0
         self.height = 0.0
 
-        # Capture the feed from camera
-        # self.cam = cv2.VideoCapture(0)
-        self.cam = AndroidCamFeed('192.168.1.4:8080')
-        self.ret, self.current_frame = self.cam.read()
-        while not self.ret:
-            print 'x'
-            if self.cam.isOpened():
-                print 'y'
-                self.ret, self.current_frame = self.cam.read()
-                # self.processed_frame = np.zeros(self.current_frame.shape, np.uint8)
+        if not android:
+            # Capture the feed from camera
+            self.cam = cv2.VideoCapture(0)
+            self.ret, self.current_frame = self.cam.read()
+            self.processed_frame = np.zeros(self.current_frame.shape, np.uint8)
+        else:
+            # Capture the feed from android phone
+            self.cam = AndroidCamFeed('192.168.1.2:8080')
+            self.ret, self.current_frame = self.cam.read()
+            while not self.ret:
+                if self.cam.isOpened():
+                    self.ret, self.current_frame = self.cam.read()
+        self.processed_frame = np.zeros(self.current_frame.shape, np.uint8)
 
         self.comm = comm
 
