@@ -56,17 +56,13 @@ while True:
     # ret2, thresh2 = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
     # Otsu's thresholding after Gaussian filtering
-    blur = cv2.GaussianBlur(gray, (9, 9), 0)
+    blur = cv2.GaussianBlur(gray, (5, 5), 0)
     ret3, thresh3 = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
     cv2.imshow('thresh3', gray)
     _, contours, _ = cv2.findContours(thresh3, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     # cv2.drawContours(robot.processed_frame, contours, -1, (0, 0, 255), 2)
-
-    # Canny
-    # robot.processed_frame = cv2.Canny(robot.current_frame,50,300,L2gradient=False)
-    # robot.processed_frame = cv2.Canny(robot.current_frame,100,150,L2gradient=True)
 
     # Good features to track
     # corners = cv2.goodFeaturesToTrack(gray, 7, 0.01, 10)
@@ -91,15 +87,21 @@ while True:
     # Process contours
     for cnt in contours:
         peri = cv2.arcLength(cnt, True)
-        approx = cv2.approxPolyDP(cnt, 0.01 * peri, True)
+        approx = cv2.approxPolyDP(cnt, 0.02 * peri, True)
         m1 = cv2.moments(approx)
-        # cv2.drawContours(robot.processed_frame, [approx], -1, (255, 0, 0), 2)
+        cv2.drawContours(robot.processed_frame, [approx], -1, (255, 0, 0), 2)
+
+        if len(approx) == 7:
+            for a in approx:
+                print a
+            print 'xxxxxxxxxxxxxxxxxxxx'
 
         rect = cv2.minAreaRect(cnt)
         box = cv2.boxPoints(rect)
         box = np.int0(box)
         m2 = cv2.moments(box)
         # robot.processed_frame = cv2.drawContours(robot.processed_frame, [box], 0, (0, 0, 255), 2)
+
 
         # try:
         #     (cm1X, cm1Y) = (int(m1["m10"] / m1["m00"]), int(m1["m01"] / m1["m00"]))

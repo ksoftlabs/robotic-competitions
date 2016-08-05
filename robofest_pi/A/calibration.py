@@ -1,7 +1,7 @@
 #this is not a part of the robot used to manually calibate color filtering
 import numpy as np
 import cv2
-import common
+import cmn
 from matplotlib import pyplot as plt
 
 def make_details_windwow(frame):#histogram initalizing not wokinng
@@ -53,7 +53,7 @@ def calibration(frame,h,v,s,b,g,r):#calibrate
     value_low = v
     blue_range = (np.uint8([hsv_blue[0,0,0]-h,s,v]),np.uint8([hsv_blue[0,0,0]+h,255,255]))
 
-    common.find_objects(frame,blue_range,"Calibration")
+    cmn.find_objects(frame, blue_range, "Calibration")
 
 
 

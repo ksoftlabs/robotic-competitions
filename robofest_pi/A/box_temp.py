@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import common
+import cmn
 
 
 def detect_box(frame, output):
@@ -21,6 +21,6 @@ def detect_box(frame, output):
 
 
     #for testing
-    common.find_objects(frame,blue_range,"Blue")
-    common.find_objects(frame,green_range,"Green")
-    common.find_objects(frame,red_range,"Red")
+    cmn.find_objects(frame, blue_range, "Blue")
+    cmn.find_objects(frame, green_range, "Green")
+    cmn.find_objects(frame, red_range, "Red")
