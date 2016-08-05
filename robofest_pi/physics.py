@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from AndroidCamFeed import AndroidCamFeed
 
 
 class Robot:
@@ -10,9 +11,15 @@ class Robot:
         self.height = 0.0
 
         # Capture the feed from camera
-        self.cam = cv2.VideoCapture(0)
+        # self.cam = cv2.VideoCapture(0)
+        self.cam = AndroidCamFeed('192.168.1.4:8080')
         self.ret, self.current_frame = self.cam.read()
-        self.processed_frame = np.zeros(self.current_frame.shape, np.uint8)
+        while not self.ret:
+            print 'x'
+            if self.cam.isOpened():
+                print 'y'
+                self.ret, self.current_frame = self.cam.read()
+                # self.processed_frame = np.zeros(self.current_frame.shape, np.uint8)
 
         self.comm = comm
 
