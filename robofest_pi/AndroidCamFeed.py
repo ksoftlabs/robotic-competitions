@@ -5,19 +5,21 @@ import threading
 import urllib2
 from socket import error as SocketError
 
+
 class AndroidCamFeed:
-    __bytes=''
+    __bytes = ''
     __stream = None
     __isOpen = False
     __feed = None
     __bytes = ''
     __noStreamCount = 1
     __loadCode = cv2.IMREAD_COLOR if sys.version_info[0] > 2 \
-                                    else cv2.IMREAD_COLOR
+        else cv2.IMREAD_COLOR
+
     def __init__(self, host):
         self.hoststr = 'http://' + host + '/video'
         try:
-            AndroidCamFeed.__stream = urllib2.urlopen(self.hoststr, timeout = 3)
+            AndroidCamFeed.__stream = urllib2.urlopen(self.hoststr, timeout=3)
             AndroidCamFeed.__isOpen = True
         except (SocketError, urllib2.URLError) as err:
             print "Failed to connect to stream. \nError: " + str(err)
@@ -35,11 +37,11 @@ class AndroidCamFeed:
             self.a = AndroidCamFeed.__bytes.find('\xff\xd8')
             self.b = AndroidCamFeed.__bytes.find('\xff\xd9')
             if self.a != -1 and self.b != -1:
-                self.jpg = AndroidCamFeed.__bytes[self.a : self.b+2]
-                AndroidCamFeed.__bytes = AndroidCamFeed.__bytes[self.b+2 : ]
+                self.jpg = AndroidCamFeed.__bytes[self.a: self.b + 2]
+                AndroidCamFeed.__bytes = AndroidCamFeed.__bytes[self.b + 2:]
                 AndroidCamFeed.__feed = cv2.imdecode(np.fromstring(self.jpg,
-                                                dtype = np.uint8),
-                                                    AndroidCamFeed.__loadCode)
+                                                                   dtype=np.uint8),
+                                                     AndroidCamFeed.__loadCode)
         return
 
     def __close(self):
@@ -51,7 +53,7 @@ class AndroidCamFeed:
         if AndroidCamFeed.__noStreamCount > 10:
             try:
                 AndroidCamFeed.__stream = urllib2.urlopen(
-                                            self.hoststr, timeout = 3)
+                        self.hoststr, timeout=3)
             except (SocketError, urllib2.URLError) as err:
                 print "Failed to connect to stream: Error: " + str(err)
                 self.__close()
