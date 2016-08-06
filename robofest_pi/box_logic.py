@@ -1,6 +1,7 @@
 class Box:
     def __init__(self, robot):
         self.robot = robot
+        self.box_color = None
 
     def is_box_seen(self):
         pass
