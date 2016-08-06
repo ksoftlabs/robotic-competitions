@@ -3,9 +3,16 @@ import numpy as np
 import sys
 import common
 
+########### THIS PART IS BASIC FUNCTIONS, PREFFERED NOT TO BE CAHNGED , find below box and arrow detection methods########################################################################
 def filter_color(frame, color, window_name):#color range as a tuple
     hsv_frame = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
-    image_mask=cv2.inRange(hsv_frame,color[0],color[1])
+
+    image_mask = 0#np.zeros((frame.shape[0],frame.shape[1]))
+    for c in color:
+        mask=cv2.inRange(hsv_frame,c[0],c[1])
+        image_mask = image_mask + mask
+
+
     rframe=cv2.bitwise_and(frame,frame,mask=image_mask)
     #cv2.imshow("Mask "+ window_name,image_mask)
     #cv2.imshow("Color Filter "+ window_name, rframe)
@@ -26,17 +33,28 @@ def find_polygons(frame):
         poly.append(cv2.approxPolyDP(c, 0.02 * peri, True))
     return poly
 
+def find_objects(frame, color, window_name):
+    filtered = filter_color(frame ,color, window_name)
+    thresholded = thresholding(filtered)
+    polys = find_polygons(thresholded)
+    arrows, rectangles = draw_shapes(thresholded, polys, window_name)
+    return arrows, rectangles
+
+##############################################################################################################################################
+
+
+
+############### shape detections method calls arrow detection method & box detection method #################
 def draw_shapes(frame, contours, window_name):
     frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR)
     rectangles = []
     arrows = []
     for c in contours:
+    ########## calls box detections method #########
         if len(c)==4:
-            r = cv2.boundingRect(c)
+            r = draw_box(c,frame)
             rectangles.append(r)
-            #cv2.drawContours(frame, r, -1, (255, 0, 0), 2)
-            cv2.rectangle(frame, (r[0],r[1]), (r[2],r[3]), (0,255,0), thickness=1)
-
+    ######### calls arrow detections methode ########
         elif len(c)==7:
             a = draw_traingles(c,frame)
             arrows.append(a)
@@ -45,19 +63,21 @@ def draw_shapes(frame, contours, window_name):
     return arrows, rectangles
 
 
-def find_objects(frame, color, window_name):
-    filtered = filter_color(frame ,color, window_name)
-    thresholded = thresholding(filtered)
-    polys = find_polygons(thresholded)
-    arrows, rectangles = draw_shapes(thresholded, polys, window_name)
-    return arrows, rectangles
+
+#### Box detection method #############
+def draw_box(c,frame):
+    r = cv2.boundingRect(c)
+    cv2.rectangle(frame, (r[0],r[1]), (r[2],r[3]), (0,255,0), thickness=1)
+    return r
 
 
+
+#### Oshan's Arrow detections method ################################################################
 def draw_traingles(approx,frame):
-    print '___________________________________________________________________________________________________'
+    #print '___________________________________________________________________________________________________'
     for c in approx:
         sys.stdout.write(str(c) + '     ')
-    print ' '
+    #print ' '
 
     for i in range(7):
         xi0 = approx[i][0][0]
@@ -104,5 +124,5 @@ def draw_traingles(approx,frame):
             cv2.putText(frame, str('BASE'), (xmid + 10, ymid + 10),
                         cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 255, 255))
 
-            print str(xi1) + ',' + str(xi2) + ',' + str(xmid) + '       ' + str(yi1) + ',' + str(yi2) + ',' + str(ymid)
+            #print str(xi1) + ',' + str(xi2) + ',' + str(xmid) + '       ' + str(yi1) + ',' + str(yi2) + ',' + str(ymid)
             return (xi1,xi2,xmid,yi1,yi2,ymid)
