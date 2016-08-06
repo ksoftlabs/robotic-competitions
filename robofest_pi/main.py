@@ -12,10 +12,17 @@ import psutil
 import common
 import sys
 
+<<<<<<< HEAD
 comm = communicate.Port()                           # Raspberry pi - Arduino serial communication interface
 robot = physics.Robot(comm, '192.168.1.2:8080')     # Define current robot state
 pid = movement.PID(robot)                           # Adjust course through pid
 control = movement.Control(robot, comm)             # Robot movement controls
+=======
+comm = communicate.Port()                   # Raspberry pi - Arduino serial communication interface
+robot = physics.Robot(comm,'192.168.1.4:8080' ,android=True)   # Define current robot state
+pid = movement.PID(robot)                   # Adjust course through pid
+control = movement.Control(robot, comm)     # Robot movement Falsecontrols
+>>>>>>> 47b08033f767885f73cfb2394c93692a5fcc50d7
 
 maze = maze_logic.Maze(robot)                       # Maze logic
 box = box_logic.Box(robot)                          # Box logic

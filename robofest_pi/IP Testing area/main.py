@@ -1,12 +1,12 @@
 import cv2
 import numpy as np
 import cmn
-import AndroidCamFeed
+from AndroidCamFeed import AndroidCamFeed
 ## for onboard cam ##
 cam = cv2.VideoCapture(0)
 
 ## for android cam ##
-# cam = AndroidCamFeed('192.168.1.6:8080')
+#cam = AndroidCamFeed('192.168.1.6:8080')
 
 
 while True:
@@ -23,11 +23,12 @@ while True:
     green_range = (np.array([160, 50, 50]) , np.array([260, 255, 255]))
 
 
-    #for testing
-    cmn.find_objects(frame, blue_range, "Blue")# frame, color range, window_name
-    cmn.find_objects(frame, green_range, "Green")
-    cmn.find_objects(frame, upper_red_range, "Red Upper")
-    cmn.find_objects(frame, lower_red_range, "Red lower")
+
+    arrows, rectangles = cmn.find_objects(frame, blue_range, "Blue")# frame, color_range, window_name
+    #contours = cmn.find_objects(frame, green_range, "Green")
+    #contours = cmn.find_objects(frame, upper_red_range, "Red Upper")
+    #contours = cmn.find_objects(frame, lower_red_range, "Red lower")
+
 
     if cv2.waitKey(1) % 256 == 27:
         break
