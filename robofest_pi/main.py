@@ -8,8 +8,6 @@ import path_logic
 import cv2
 import time
 import common
-import sys
-import global_values as g
 import contour
 
 
@@ -41,12 +39,12 @@ while True:
 
     for cnt in contours:
         peri = cv2.arcLength(cnt, True)
-        approx = cv2.approxPolyDP(cnt, 0.005 * peri, True)
+        approx = cv2.approxPolyDP(cnt, 0.01 * peri, True)
         cv2.drawContours(robot.processed_frame, [approx], -1, (255, 0, 0), 2)
 
         if len(approx) == 7:
             for i in range(7):
-                arrow = contour.Contour(approx, i)
+                arrow = contour.Arrow(approx, i)
 
                 if arrow.is_valid_arrow():
                     arrow.calculate_mid_point()
