@@ -121,8 +121,12 @@ while True:
                 m1 = common.find_gradient(xi0, yi0, xi1, yi1)
                 m2 = common.find_gradient(xi2, yi2, xi3, yi3)
 
+                d1 = common.find_distance(xi0, yi0, xi1, yi1)
+                d2 = common.find_distance(xi2, yi2, xi3, yi3)
+
                 diff = abs(m1 - m2)
-                if diff <= 0.1:
+                dist_diff = abs(d1 - d2)
+                if diff <= 0.3 and dist_diff <= 10:
                     xmid = (xi1 + xi2) / 2
                     ymid = (yi1 + yi2) / 2
 
@@ -143,8 +147,10 @@ while True:
                                 cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 255, 255))
                     cv2.putText(robot.processed_frame, str('BASE'), (xmid + 10, ymid + 10),
                                 cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 255, 255))
-
-                    print str(xi1) + ',' + str(xi2) + ',' + str(xmid) + '       ' + str(yi1) + ',' + str(yi2) + ',' + str(ymid)
+                    print str(m1) + ',' + str(m2) + ',' + str(diff) + '     ' + str(d1) + ',' + str(d2) + ',' + str(dist_diff)
+                    # break
+                # else:
+                #     print str(m1) + ',' + str(m2) + ',' + str(diff) + '     ' + str(d1) + ',' + str(d2) + ',' + str(dist_diff)
 
         # rect = cv2.minAreaRect(cnt)
         # box = cv2.boxPoints(rect)
