@@ -1,4 +1,3 @@
-import cv2
 import physics
 import communicate
 import movement
@@ -6,11 +5,12 @@ import maze_logic
 import box_logic
 import path_logic
 
+import cv2
 import time
-import psutil
 import common
 import sys
 import global_values as g
+import contour
 
 
 comm = communicate.Port()                           # Raspberry pi - Arduino serial communication interface
@@ -31,139 +31,43 @@ while True:
     # Contours
     frame_hsv = cv2.cvtColor(robot.current_frame, cv2.COLOR_BGR2HSV)
 
-    frame_mask = path.get_red_mask(frame_hsv) + path.get_green_mask(frame_hsv) + path.get_blue_mask(frame_hsv)
+    frame_mask = common.get_red_mask(frame_hsv) + common.get_green_mask(frame_hsv) + common.get_blue_mask(frame_hsv)
     robot.processed_frame = cv2.bitwise_and(robot.current_frame, robot.current_frame, mask=frame_mask)
 
-    gray = cv2.cvtColor(robot.processed_frame, cv2.COLOR_BGR2GRAY)
-    threshold_img = common.get_otsu_gaussian_threshold(gray)
+    gray_img = cv2.cvtColor(robot.processed_frame, cv2.COLOR_BGR2GRAY)
+    threshold_img = common.get_otsu_gaussian_threshold(gray_img)
 
-    contours = common.get_contours(gray)
+    contours = common.get_contours(threshold_img)
 
-    # cv2.drawContours(robot.processed_frame, contours, -1, (0, 0, 255), 2)
-
-    # Good features to track
-    # corners = cv2.goodFeaturesToTrack(gray, 7, 0.01, 10)
-    # if corners is not None:
-    #     corners = np.int0(corners)
-    #
-    #     for i in corners:
-    #         x, y = i.ravel()
-    #         cv2.circle(robot.processed_frame, (x, y), 3, 255, -1)
-    # else:
-    #     pass
-
-    # Corner detection
-    # gray = np.float32(gray)
-    # dst = cv2.cornerHarris(gray, 2, 29, 0.05)
-    # # Result is dilated for marking the corners, not important
-    # dst = cv2.dilate(dst, None)
-    # # Threshold for an optimal value, it may vary depending on the image.
-    # robot.current_frame[dst > 0.1 * dst.max()] = [0, 0, 255]
-    # cv2.imshow('dst', robot.current_frame)
-
-    # Process contours
     for cnt in contours:
         peri = cv2.arcLength(cnt, True)
-        approx = cv2.approxPolyDP(cnt, 0.02 * peri, True)
-        # m1 = cv2.moments(approx)
+        approx = cv2.approxPolyDP(cnt, 0.005 * peri, True)
         cv2.drawContours(robot.processed_frame, [approx], -1, (255, 0, 0), 2)
 
         if len(approx) == 7:
-            print '__________________________________________________________________________________________________'
-            for c in approx:
-                sys.stdout.write(str(c) + '     ')
-            print ' '
-
             for i in range(7):
-                xi0 = approx[i][0][0]
-                yi0 = approx[i][0][1]
-                xi1 = approx[(i + 1) % 6][0][0]
-                yi1 = approx[(i + 1) % 6][0][1]
-                xi2 = approx[(i + 2) % 6][0][0]
-                yi2 = approx[(i + 2) % 6][0][1]
-                xi3 = approx[(i + 3) % 6][0][0]
-                yi3 = approx[(i + 3) % 6][0][1]
-                if i == 0:
-                    xin2 = approx[5][0][0]
-                    yin2 = approx[5][0][1]
-                elif i == 1:
-                    xin2 = approx[6][0][0]
-                    yin2 = approx[6][0][1]
-                else:
-                    xin2 = approx[i - 2][0][0]
-                    yin2 = approx[i - 2][0][1]
+                arrow = contour.Contour(approx, i)
 
-                m1 = common.get_gradient(xi0, yi0, xi1, yi1)
-                m2 = common.get_gradient(xi2, yi2, xi3, yi3)
+                if arrow.is_valid_arrow():
+                    arrow.calculate_mid_point()
 
-                d1 = common.get_distance(xi0, yi0, xi1, yi1)
-                d2 = common.get_distance(xi2, yi2, xi3, yi3)
+                    arrow.draw_initial_point(robot.processed_frame)
+                    arrow.draw_mid_base_point(robot.processed_frame)
 
-                diff = abs(m1 - m2)
-                dist_diff = abs(d1 - d2)
-                if diff <= 0.5 and dist_diff <= 15:
-                    xmid = (xi1 + xi2) / 2
-                    ymid = (yi1 + yi2) / 2
-
-                    cv2.circle(robot.processed_frame, (xi0, yi0), 4, (0, 255, 0), 2)
-                    cv2.line(robot.processed_frame, (xmid, ymid), (xin2, yin2), (0, 255, 0), 2)
-                    cv2.line(robot.processed_frame, (xi0, yi0), (xi1, yi1), (255, 255, 255), 2)
-                    cv2.line(robot.processed_frame, (xi2, yi2), (xi3, yi3), (255, 255, 255), 2)
-
-                    cv2.putText(robot.processed_frame, str(i), (xi0 + 10, yi0 + 10),
-                                cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 255, 255))
-                    cv2.putText(robot.processed_frame, str(i + 1), (xi1 + 10, yi1 + 10),
-                                cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 255, 255))
-                    cv2.putText(robot.processed_frame, str(i + 2), (xi2 + 10, yi2 + 10),
-                                cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 255, 255))
-                    cv2.putText(robot.processed_frame, str(i + 3), (xi3 + 10, yi3 + 10),
-                                cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 255, 255))
-                    cv2.putText(robot.processed_frame, str('HEAD'), (xin2 + 10, yin2 + 10),
-                                cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 255, 255))
-                    cv2.putText(robot.processed_frame, str('BASE'), (xmid + 10, ymid + 10),
-                                cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 255, 255))
-                    # print str(m1) + ',' + str(m2) + ',' + str(diff) + '     ' + str(d1) + ',' + str(d2) + ',' + str(dist_diff)
-                    break
-                # else:
-                #     print str(m1) + ',' + str(m2) + ',' + str(diff) + '     ' + str(d1) + ',' + str(d2) + ',' + str(dist_diff)
-
-        # rect = cv2.minAreaRect(cnt)
-        # box = cv2.boxPoints(rect)
-        # box = np.int0(box)
-        # m2 = cv2.moments(box)
-        # robot.processed_frame = cv2.drawContours(robot.processed_frame, [box], 0, (0, 0, 255), 2)
-
-
-        # try:
-        #     (cm1X, cm1Y) = (int(m1["m10"] / m1["m00"]), int(m1["m01"] / m1["m00"]))
-        #     (cm2X, cm2Y) = (int(m2["m10"] / m2["m00"]), int(m2["m01"] / m2["m00"]))
-        #     cv2.circle(robot.processed_frame, (cm1X, cm1Y), 1, (255, 0, 0), 2)
-        #     cv2.circle(robot.processed_frame, (cm2X, cm2Y), 1, (0, 0, 255), 2)
-        # except:
-        #     pass
+                    arrow.enable_lines(robot.processed_frame)
+                    arrow.enable_labels(robot.processed_frame)
 
     end = time.time()
     diff = end - start
     if diff == 0:
-        diff = 10000
+        diff = 0.0000001
 
-    cpu = psutil.cpu_percent()
-    mem = psutil.virtual_memory().percent
-    # cv2.putText(robot.current_frame, 'FPS ' + str(1.0 / diff), (10, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-    #             (255, 0, 0))
-    # cv2.putText(robot.current_frame, 'CPU usage ' + str(cpu), (10, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-    #             (255, 0, 0))
-    # cv2.putText(robot.current_frame, 'Memory usage ' + str(mem), (10, 70), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-    #             (255, 0, 0))
-    cv2.putText(robot.processed_frame, 'FPS ' + str(1.0 / diff), (10, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-                (255, 0, 0))
-    cv2.putText(robot.processed_frame, 'CPU usage ' + str(cpu), (10, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-                (255, 0, 0))
-    cv2.putText(robot.processed_frame, 'Memory usage ' + str(mem), (10, 70), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-                (255, 0, 0))
+    fps = 1.0 / diff
+
+    common.draw_machine_details(robot.processed_frame, fps)
 
     cv2.imshow('Feed', robot.current_frame)
-    cv2.imshow('Threshold image', gray)
+    cv2.imshow('Threshold image', gray_img)
     cv2.imshow('Processed feed', robot.processed_frame)
 
     if cv2.waitKey(1) % 256 == 27:
