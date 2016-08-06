@@ -90,7 +90,7 @@ while True:
     for cnt in contours:
         peri = cv2.arcLength(cnt, True)
         approx = cv2.approxPolyDP(cnt, 0.02 * peri, True)
-        m1 = cv2.moments(approx)
+        # m1 = cv2.moments(approx)
         cv2.drawContours(robot.processed_frame, [approx], -1, (255, 0, 0), 2)
 
         if len(approx) == 7:
@@ -146,10 +146,10 @@ while True:
 
                     print str(xi1) + ',' + str(xi2) + ',' + str(xmid) + '       ' + str(yi1) + ',' + str(yi2) + ',' + str(ymid)
 
-        rect = cv2.minAreaRect(cnt)
-        box = cv2.boxPoints(rect)
-        box = np.int0(box)
-        m2 = cv2.moments(box)
+        # rect = cv2.minAreaRect(cnt)
+        # box = cv2.boxPoints(rect)
+        # box = np.int0(box)
+        # m2 = cv2.moments(box)
         # robot.processed_frame = cv2.drawContours(robot.processed_frame, [box], 0, (0, 0, 255), 2)
 
 
@@ -175,12 +175,12 @@ while True:
     #             (255, 0, 0))
     # cv2.putText(robot.current_frame, 'Memory usage ' + str(mem), (10, 70), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
     #             (255, 0, 0))
-    # cv2.putText(robot.processed_frame, 'FPS ' + str(1.0 / diff), (10, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-    #             (255, 0, 0))
-    # cv2.putText(robot.processed_frame, 'CPU usage ' + str(cpu), (10, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-    #             (255, 0, 0))
-    # cv2.putText(robot.processed_frame, 'Memory usage ' + str(mem), (10, 70), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-    #             (255, 0, 0))
+    cv2.putText(robot.processed_frame, 'FPS ' + str(1.0 / diff), (10, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
+                (255, 0, 0))
+    cv2.putText(robot.processed_frame, 'CPU usage ' + str(cpu), (10, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
+                (255, 0, 0))
+    cv2.putText(robot.processed_frame, 'Memory usage ' + str(mem), (10, 70), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
+                (255, 0, 0))
 
     cv2.imshow('Feed', robot.current_frame)
     cv2.imshow('Processed feed', robot.processed_frame)
