@@ -4,13 +4,13 @@ from AndroidCamFeed import AndroidCamFeed
 
 
 class Robot:
-    def __init__(self, comm, ip, android=False):
+    def __init__(self, comm, ip=None):
         # Dimensions
         self.length = 0.0
         self.width = 0.0
         self.height = 0.0
 
-        if not android:
+        if ip is None:
             # Capture the feed from camera
             self.cam = cv2.VideoCapture(0)
             self.ret, self.current_frame = self.cam.read()
@@ -39,9 +39,9 @@ class Robot:
         self.back_sonar = 0     # Back sonar distance
 
     def see(self, image=None):
-        self.ret, self.current_frame = self.cam.read()
-
-        if image is not None:
+        if image is None:
+            self.ret, self.current_frame = self.cam.read()
+        else:
             self.current_frame = cv2.imread('./sample/' + image)
             self.processed_frame = np.zeros(self.current_frame.shape, np.uint8)
 

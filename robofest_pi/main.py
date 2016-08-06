@@ -12,14 +12,14 @@ import psutil
 import common
 import sys
 
-comm = communicate.Port()                   # Raspberry pi - Arduino serial communication interface
-robot = physics.Robot(comm,'192.168.1.6:8080' ,android=True)   # Define current robot state
-pid = movement.PID(robot)                   # Adjust course through pid
-control = movement.Control(robot, comm)     # Robot movement controls
+comm = communicate.Port()                           # Raspberry pi - Arduino serial communication interface
+robot = physics.Robot(comm, '192.168.1.2:8080')     # Define current robot state
+pid = movement.PID(robot)                           # Adjust course through pid
+control = movement.Control(robot, comm)             # Robot movement controls
 
-maze = maze_logic.Maze(robot)               # Maze logic
-box = box_logic.Box(robot)                  # Box logic
-path = path_logic.Path(robot)               # Path logic
+maze = maze_logic.Maze(robot)                       # Maze logic
+box = box_logic.Box(robot)                          # Box logic
+path = path_logic.Path(robot)                       # Path logic
 
 #################################################################################################################
 # Testing area
@@ -122,7 +122,7 @@ while True:
                 m2 = common.find_gradient(xi2, yi2, xi3, yi3)
 
                 diff = abs(m1 - m2)
-                if -0.1 <= diff <= 0.1:
+                if diff <= 0.1:
                     xmid = (xi1 + xi2) / 2
                     ymid = (yi1 + yi2) / 2
 
