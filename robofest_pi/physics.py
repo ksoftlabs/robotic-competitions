@@ -4,7 +4,7 @@ from AndroidCamFeed import AndroidCamFeed
 
 
 class Robot:
-    def __init__(self, comm, android=False):
+    def __init__(self, comm, ip, android=False):
         # Dimensions
         self.length = 0.0
         self.width = 0.0
@@ -17,7 +17,7 @@ class Robot:
             self.processed_frame = np.zeros(self.current_frame.shape, np.uint8)
         else:
             # Capture the feed from android phone
-            self.cam = AndroidCamFeed('192.168.1.4:8080')
+            self.cam = AndroidCamFeed(ip)
             self.ret, self.current_frame = self.cam.read()
             while not self.ret:
                 if self.cam.isOpened():
