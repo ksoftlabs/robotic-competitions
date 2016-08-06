@@ -13,9 +13,9 @@ import common
 import sys
 
 comm = communicate.Port()                   # Raspberry pi - Arduino serial communication interface
-robot = physics.Robot(comm,'192.168.1.6:8080' ,android=True)   # Define current robot state
+robot = physics.Robot(comm,'192.168.1.4:8080' ,android=True)   # Define current robot state
 pid = movement.PID(robot)                   # Adjust course through pid
-control = movement.Control(robot, comm)     # Robot movement controls
+control = movement.Control(robot, comm)     # Robot movement Falsecontrols
 
 maze = maze_logic.Maze(robot)               # Maze logic
 box = box_logic.Box(robot)                  # Box logic
