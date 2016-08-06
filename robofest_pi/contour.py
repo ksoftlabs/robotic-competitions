@@ -2,7 +2,7 @@ import cv2
 import common
 
 
-class Contour:
+class Arrow:
     def __init__(self, point_set, pos):             # pos is the position of the required point (starting position)
         self.pos = pos
 
