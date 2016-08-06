@@ -1,28 +1,22 @@
 import cv2
-import box_logic
-import communicate
-import maze_logic
-import movement
-import path_logic
 import physics
+import communicate
+import movement
+import maze_logic
+import box_logic
+import path_logic
 
-import numpy as np
 import time
 import psutil
 import common
 import sys
+import global_values as g
 
-<<<<<<< HEAD
+
 comm = communicate.Port()                           # Raspberry pi - Arduino serial communication interface
 robot = physics.Robot(comm, '192.168.1.2:8080')     # Define current robot state
 pid = movement.PID(robot)                           # Adjust course through pid
 control = movement.Control(robot, comm)             # Robot movement controls
-=======
-comm = communicate.Port()                   # Raspberry pi - Arduino serial communication interface
-robot = physics.Robot(comm,'192.168.1.4:8080' ,android=True)   # Define current robot state
-pid = movement.PID(robot)                   # Adjust course through pid
-control = movement.Control(robot, comm)     # Robot movement Falsecontrols
->>>>>>> 47b08033f767885f73cfb2394c93692a5fcc50d7
 
 maze = maze_logic.Maze(robot)                       # Maze logic
 box = box_logic.Box(robot)                          # Box logic
@@ -37,39 +31,13 @@ while True:
     # Contours
     frame_hsv = cv2.cvtColor(robot.current_frame, cv2.COLOR_BGR2HSV)
 
-    lower_red = np.array([0, 50, 50])
-    upper_red = np.array([10, 255, 255])
-    lower_red_mask = cv2.inRange(frame_hsv, lower_red, upper_red)
+    frame_mask = path.get_red_mask(frame_hsv) + path.get_green_mask(frame_hsv) + path.get_blue_mask(frame_hsv)
+    robot.processed_frame = cv2.bitwise_and(robot.current_frame, robot.current_frame, mask=frame_mask)
 
-    lower_red = np.array([170, 50, 50])
-    upper_red = np.array([180, 255, 255])
-    upper_red_mask = cv2.inRange(frame_hsv, lower_red, upper_red)
+    gray = cv2.cvtColor(robot.processed_frame, cv2.COLOR_BGR2GRAY)
+    threshold_img = common.get_otsu_gaussian_threshold(gray)
 
-    lower_green = np.array([80, 50, 50])
-    upper_green = np.array([160, 255, 255])
-    green_mask = cv2.inRange(frame_hsv, lower_green, upper_green)
-
-    lower_blue = np.array([160, 50, 50])
-    upper_blue = np.array([260, 255, 255])
-    blue_mask = cv2.inRange(frame_hsv, lower_blue, upper_blue)
-
-    img_mask = lower_red_mask + upper_red_mask + green_mask + blue_mask
-
-    robot.processed_frame = cv2.bitwise_and(robot.current_frame, robot.current_frame, mask=img_mask)
-
-    rgb = cv2.cvtColor(robot.processed_frame, cv2.COLOR_HSV2RGB)
-    gray = cv2.cvtColor(robot.processed_frame, cv2.COLOR_RGB2GRAY)
-    # ret, thresh = cv2.threshold(gray, 70, 255, cv2.THRESH_BINARY)
-
-    # Otsu's thresholding
-    # ret2, thresh2 = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-
-    # Otsu's thresholding after Gaussian filtering
-    blur = cv2.GaussianBlur(gray, (5, 5), 0)
-    ret3, thresh3 = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-
-    cv2.imshow('thresh3', gray)
-    _, contours, _ = cv2.findContours(thresh3, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours = common.get_contours(gray)
 
     # cv2.drawContours(robot.processed_frame, contours, -1, (0, 0, 255), 2)
 
@@ -101,7 +69,7 @@ while True:
         cv2.drawContours(robot.processed_frame, [approx], -1, (255, 0, 0), 2)
 
         if len(approx) == 7:
-            print '___________________________________________________________________________________________________'
+            print '__________________________________________________________________________________________________'
             for c in approx:
                 sys.stdout.write(str(c) + '     ')
             print ' '
@@ -125,15 +93,15 @@ while True:
                     xin2 = approx[i - 2][0][0]
                     yin2 = approx[i - 2][0][1]
 
-                m1 = common.find_gradient(xi0, yi0, xi1, yi1)
-                m2 = common.find_gradient(xi2, yi2, xi3, yi3)
+                m1 = common.get_gradient(xi0, yi0, xi1, yi1)
+                m2 = common.get_gradient(xi2, yi2, xi3, yi3)
 
-                d1 = common.find_distance(xi0, yi0, xi1, yi1)
-                d2 = common.find_distance(xi2, yi2, xi3, yi3)
+                d1 = common.get_distance(xi0, yi0, xi1, yi1)
+                d2 = common.get_distance(xi2, yi2, xi3, yi3)
 
                 diff = abs(m1 - m2)
                 dist_diff = abs(d1 - d2)
-                if diff <= 0.3 and dist_diff <= 10:
+                if diff <= 0.5 and dist_diff <= 15:
                     xmid = (xi1 + xi2) / 2
                     ymid = (yi1 + yi2) / 2
 
@@ -154,8 +122,8 @@ while True:
                                 cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 255, 255))
                     cv2.putText(robot.processed_frame, str('BASE'), (xmid + 10, ymid + 10),
                                 cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 255, 255))
-                    print str(m1) + ',' + str(m2) + ',' + str(diff) + '     ' + str(d1) + ',' + str(d2) + ',' + str(dist_diff)
-                    # break
+                    # print str(m1) + ',' + str(m2) + ',' + str(diff) + '     ' + str(d1) + ',' + str(d2) + ',' + str(dist_diff)
+                    break
                 # else:
                 #     print str(m1) + ',' + str(m2) + ',' + str(diff) + '     ' + str(d1) + ',' + str(d2) + ',' + str(dist_diff)
 
@@ -173,7 +141,6 @@ while True:
         #     cv2.circle(robot.processed_frame, (cm2X, cm2Y), 1, (0, 0, 255), 2)
         # except:
         #     pass
-
 
     end = time.time()
     diff = end - start
@@ -196,6 +163,7 @@ while True:
                 (255, 0, 0))
 
     cv2.imshow('Feed', robot.current_frame)
+    cv2.imshow('Threshold image', gray)
     cv2.imshow('Processed feed', robot.processed_frame)
 
     if cv2.waitKey(1) % 256 == 27:
