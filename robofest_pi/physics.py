@@ -17,7 +17,7 @@ class Robot:
             self.processed_frame = np.zeros(self.current_frame.shape, np.uint8)
         else:
             # Capture the feed from android phone
-            self.cam = AndroidCamFeed('192.168.1.2:8080')
+            self.cam = AndroidCamFeed('192.168.1.4:8080')
             self.ret, self.current_frame = self.cam.read()
             while not self.ret:
                 if self.cam.isOpened():
@@ -38,8 +38,12 @@ class Robot:
         self.right_sonar = 0    # Right sonar distance
         self.back_sonar = 0     # Back sonar distance
 
-    def see(self):
+    def see(self, image=None):
         self.ret, self.current_frame = self.cam.read()
+
+        if image is not None:
+            self.current_frame = cv2.imread('./sample/' + image)
+            self.processed_frame = np.zeros(self.current_frame.shape, np.uint8)
 
     def update_sonar_data(self):
         self.front_sonar = self.comm.get_front_distance()

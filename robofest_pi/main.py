@@ -9,6 +9,8 @@ import physics
 import numpy as np
 import time
 import psutil
+import common
+import sys
 
 comm = communicate.Port()                   # Raspberry pi - Arduino serial communication interface
 robot = physics.Robot(comm, android=True)   # Define current robot state
@@ -92,9 +94,57 @@ while True:
         cv2.drawContours(robot.processed_frame, [approx], -1, (255, 0, 0), 2)
 
         if len(approx) == 7:
-            for a in approx:
-                print a
-            print 'xxxxxxxxxxxxxxxxxxxx'
+            print '___________________________________________________________________________________________________'
+            for c in approx:
+                sys.stdout.write(str(c) + '     ')
+            print ' '
+
+            for i in range(7):
+                xi0 = approx[i][0][0]
+                yi0 = approx[i][0][1]
+                xi1 = approx[(i + 1) % 6][0][0]
+                yi1 = approx[(i + 1) % 6][0][1]
+                xi2 = approx[(i + 2) % 6][0][0]
+                yi2 = approx[(i + 2) % 6][0][1]
+                xi3 = approx[(i + 3) % 6][0][0]
+                yi3 = approx[(i + 3) % 6][0][1]
+                if i == 0:
+                    xin2 = approx[5][0][0]
+                    yin2 = approx[5][0][1]
+                elif i == 1:
+                    xin2 = approx[6][0][0]
+                    yin2 = approx[6][0][1]
+                else:
+                    xin2 = approx[i - 2][0][0]
+                    yin2 = approx[i - 2][0][1]
+
+                m1 = common.find_gradient(xi0, yi0, xi1, yi1)
+                m2 = common.find_gradient(xi2, yi2, xi3, yi3)
+
+                diff = abs(m1 - m2)
+                if -0.1 <= diff <= 0.1:
+                    xmid = (xi1 + xi2) / 2
+                    ymid = (yi1 + yi2) / 2
+
+                    cv2.circle(robot.processed_frame, (xi0, yi0), 4, (0, 255, 0), 2)
+                    cv2.line(robot.processed_frame, (xmid, ymid), (xin2, yin2), (0, 255, 0), 2)
+                    cv2.line(robot.processed_frame, (xi0, yi0), (xi1, yi1), (255, 255, 255), 2)
+                    cv2.line(robot.processed_frame, (xi2, yi2), (xi3, yi3), (255, 255, 255), 2)
+
+                    cv2.putText(robot.processed_frame, str(i), (xi0 + 10, yi0 + 10),
+                                cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 255, 255))
+                    cv2.putText(robot.processed_frame, str(i + 1), (xi1 + 10, yi1 + 10),
+                                cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 255, 255))
+                    cv2.putText(robot.processed_frame, str(i + 2), (xi2 + 10, yi2 + 10),
+                                cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 255, 255))
+                    cv2.putText(robot.processed_frame, str(i + 3), (xi3 + 10, yi3 + 10),
+                                cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 255, 255))
+                    cv2.putText(robot.processed_frame, str('HEAD'), (xin2 + 10, yin2 + 10),
+                                cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 255, 255))
+                    cv2.putText(robot.processed_frame, str('BASE'), (xmid + 10, ymid + 10),
+                                cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 255, 255))
+
+                    print str(xi1) + ',' + str(xi2) + ',' + str(xmid) + '       ' + str(yi1) + ',' + str(yi2) + ',' + str(ymid)
 
         rect = cv2.minAreaRect(cnt)
         box = cv2.boxPoints(rect)
@@ -119,18 +169,18 @@ while True:
 
     cpu = psutil.cpu_percent()
     mem = psutil.virtual_memory().percent
-    cv2.putText(robot.current_frame, 'FPS ' + str(1.0 / diff), (10, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-                (255, 0, 0))
-    cv2.putText(robot.current_frame, 'CPU usage ' + str(cpu), (10, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-                (255, 0, 0))
-    cv2.putText(robot.current_frame, 'Memory usage ' + str(mem), (10, 70), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-                (255, 0, 0))
-    cv2.putText(robot.processed_frame, 'FPS ' + str(1.0 / diff), (10, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-                (255, 0, 0))
-    cv2.putText(robot.processed_frame, 'CPU usage ' + str(cpu), (10, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-                (255, 0, 0))
-    cv2.putText(robot.processed_frame, 'Memory usage ' + str(mem), (10, 70), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-                (255, 0, 0))
+    # cv2.putText(robot.current_frame, 'FPS ' + str(1.0 / diff), (10, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
+    #             (255, 0, 0))
+    # cv2.putText(robot.current_frame, 'CPU usage ' + str(cpu), (10, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
+    #             (255, 0, 0))
+    # cv2.putText(robot.current_frame, 'Memory usage ' + str(mem), (10, 70), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
+    #             (255, 0, 0))
+    # cv2.putText(robot.processed_frame, 'FPS ' + str(1.0 / diff), (10, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
+    #             (255, 0, 0))
+    # cv2.putText(robot.processed_frame, 'CPU usage ' + str(cpu), (10, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
+    #             (255, 0, 0))
+    # cv2.putText(robot.processed_frame, 'Memory usage ' + str(mem), (10, 70), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
+    #             (255, 0, 0))
 
     cv2.imshow('Feed', robot.current_frame)
     cv2.imshow('Processed feed', robot.processed_frame)
