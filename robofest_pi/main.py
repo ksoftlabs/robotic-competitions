@@ -10,14 +10,16 @@ import time
 import common
 
 
-comm = communicate.Port()                           # Raspberry pi - Arduino serial communication interface
-robot = physics.Robot(comm, '192.168.1.4:8080')     # Define current robot state
-pid = movement.PID(robot)                           # Adjust course through pid
-control = movement.Control(robot, comm)             # Robot movement controls
+comm = communicate.Port()                                   # Raspberry pi - Arduino serial communication interface
+# robot = physics.Robot(comm, '192.168.1.4:8080')             # Define current robot state
+robot = physics.Robot(comm)             # Define current robot state
+path_queue = movement.PathQueue(robot.get_frame_height())   # Expected path offset values
+pid = movement.PID(robot, path_queue)                       # Adjust course through pid
+control = movement.Control(robot, comm)                     # Robot movement controls
 
-maze = maze_logic.Maze(robot)                       # Maze logic
-box = box_logic.Box(robot)                          # Box logic
-path = path_logic.Path(robot, box)                  # Path logic
+maze = maze_logic.Maze(robot)                               # Maze logic
+box = box_logic.Box(robot)                                  # Box logic
+path = path_logic.Path(robot, path_queue, box)              # Path logic
 
 #################################################################################################################
 # Testing area

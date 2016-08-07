@@ -6,24 +6,24 @@ class Arrow:
     def __init__(self, point_set, pos):             # pos is the position of the required point (starting position)
         self.pos = pos
 
-        self.i0x = point_set[pos][0][0]
-        self.i0y = point_set[pos][0][1]
-        self.i1x = point_set[(pos + 1) % 6][0][0]
-        self.i1y = point_set[(pos + 1) % 6][0][1]
-        self.i2x = point_set[(pos + 2) % 6][0][0]
-        self.i2y = point_set[(pos + 2) % 6][0][1]
-        self.i3x = point_set[(pos + 3) % 6][0][0]
-        self.i3y = point_set[(pos + 3) % 6][0][1]
+        self.i0x = point_set[pos][0][1]
+        self.i0y = point_set[pos][0][0]
+        self.i1x = point_set[(pos + 1) % 6][0][1]
+        self.i1y = point_set[(pos + 1) % 6][0][0]
+        self.i2x = point_set[(pos + 2) % 6][0][1]
+        self.i2y = point_set[(pos + 2) % 6][0][0]
+        self.i3x = point_set[(pos + 3) % 6][0][1]
+        self.i3y = point_set[(pos + 3) % 6][0][0]
 
         if pos == 0:
-            self.in2x = point_set[5][0][0]
-            self.in2y = point_set[5][0][1]
+            self.in2x = point_set[5][0][1]
+            self.in2y = point_set[5][0][0]
         elif pos == 1:
-            self.in2x = point_set[6][0][0]
-            self.in2y = point_set[6][0][1]
+            self.in2x = point_set[6][0][1]
+            self.in2y = point_set[6][0][0]
         else:
-            self.in2x = point_set[pos - 2][0][0]
-            self.in2y = point_set[pos - 2][0][1]
+            self.in2x = point_set[pos - 2][0][1]
+            self.in2y = point_set[pos - 2][0][0]
 
         self.midx = (self.i1x + self.i2x) / 2
         self.midy = (self.i1y + self.i2y) / 2
@@ -35,7 +35,10 @@ class Arrow:
         d1 = self.get_i0_to_i1_distance()
         d2 = self.get_i2_to_i3_distance()
 
-        return abs(m1 - m2) <= 0.5 and abs(d1 - d2) <= 15
+        c1 = abs(m1 - m2) <= 0.5
+        c2 = (m1 == float('Inf') or m1 == float('-Inf')) and (m2 == float('Inf') or m2 == float('-Inf'))
+        c3 = abs(d1 - d2) <= 15
+        return (c1 or c2) and c3
 
     def get_i0_to_i1_gradient(self):
         return common.get_gradient(self.i0x, self.i0y, self.i1x, self.i1y)
@@ -48,6 +51,12 @@ class Arrow:
 
     def get_i2_to_i3_distance(self):
         return common.get_distance(self.i2x, self.i2y, self.i3x, self.i3y)
+
+    def get_main_axis_gradient(self):
+        return common.get_gradient(self.in2x, self.in2y, self.midx, self.midy)
+
+    def get_main_axis_intercept(self):
+        return common.div(float(self.midx - self.in2x), (self.in2y * self.midx - self.midy * self.in2x))
 
     def draw_initial_point(self, frame, radius=4, color=(0, 255, 0), thickness=2):
         cv2.circle(frame, (self.i0x, self.i0y), radius, color, thickness)
