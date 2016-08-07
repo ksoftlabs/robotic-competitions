@@ -25,6 +25,6 @@ while True:
     #contours = cmn.find_objects(frame, upper_red_range, "Red Upper")
     #contours = cmn.find_objects(frame, lower_red_range, "Red lower")
 
-    bd.box_detection(frame,20,30,40,50)#sonar right,left,top,bottom in pixel values
+    bd.detect_box(frame,20,30,40,50)#sonar right,left,top,bottom in pixel values
     if cv2.waitKey(1) % 256 == 27:
         break
