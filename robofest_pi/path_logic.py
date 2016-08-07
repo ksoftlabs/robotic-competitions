@@ -3,46 +3,13 @@ import contour
 import common
 
 
-class PathQueue:
-
-    # Path Queue (size: 100)
-    # 99          0
-    # .           .
-    # .           .
-    # .           .
-    # 4                       9
-    # 3                   7
-    # 2       -2
-    # 1   -5
-    # 0           0
-
-    def __init__(self, size):
-        self.size = size
-        self.items = [0.0] * self.size
-
-    def enqueue(self, item):
-        self.items.pop(0)
-        self.items.append(item)
-
-    def dequeue(self):
-        self.items.append(0.0)
-        return self.items.pop(0)
-
-    def get_offset(self, index):
-        if 0 <= index <= self.size - 1:
-            return self.items[index]
-        else:
-            print 'Path index out of range'
-            return None
-
-    def clear(self):
-        self.items = [0.0] * self.size
-
-
 class Path:
-    def __init__(self, robot, box):
+    def __init__(self, robot, path_queue, box):
         self.robot = robot
+        self.path_queue = path_queue
         self.box = box
+
+        self.frame_width = self.robot.get_frame_width()
 
         self.gray_img = None
         self.threshold_img = None
@@ -59,7 +26,23 @@ class Path:
             arrow.enable_lines(self.robot.processed_frame)
             arrow.enable_labels(self.robot.processed_frame)
 
-        pass
+            # Change path queue
+            m = arrow.get_main_axis_gradient()
+            c = arrow.get_main_axis_intercept()
+            a = min([arrow.in2y, arrow.midy])
+            b = max([arrow.in2y, arrow.midy])
+            for y in range(a, b + 1):
+                if m == 0.0:        # >>>>>>>>>>>>>>>>>>>>> Has to check how the robot responds to horizontal arrows
+                    if arrow.in2x > arrow.midx:     # points East
+                        x = self.frame_width
+                    else:                           # Points West
+                        x = 0
+                elif m == float('Inf') or m == float('-Inf'):
+                    x = (arrow.in2x + arrow.midx) / 2.0
+                else:
+                    x = y - c / m
+
+                self.path_queue.set_offset(y, x)
 
     def refine_current_view(self):
         if self.box.color == 'red':

@@ -13,11 +13,20 @@ def draw_machine_details(frame, fps):
     cv2.putText(frame, 'Memory usage ' + str(mem), (10, 70), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 0, 0))
 
 
+def div(numerator, denominator):
+    if denominator == 0.0:
+        if numerator > 0:
+            return float('Inf')
+        else:
+            return float('-Inf')
+    else:
+        return numerator / denominator
+
+
 def get_gradient(x1, y1, x2, y2):
-    x_diff = float(x2 - x1)
-    if x_diff == 0.0:
-        x_diff = 0.0000000000001
-    return (y2 - y1) / x_diff
+    dx = float(x2 - x1)
+    dy = y2 - y1
+    return div(dy, dx)
 
 
 def get_distance(x1, y1, x2, y2):

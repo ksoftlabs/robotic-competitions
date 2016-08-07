@@ -50,3 +50,11 @@ class Robot:
         self.left_sonar = self.comm.get_left_distance()
         self.right_sonar = self.comm.get_right_distance()
         self.back_sonar = self.comm.get_back_direction()
+
+    def get_frame_height(self):
+        height, width, channels = self.current_frame.shape
+        return height
+
+    def get_frame_width(self):
+        height, width, channels = self.current_frame.shape
+        return width

@@ -1,8 +1,38 @@
 from time import sleep
 
 
+class PathQueue:
+    def __init__(self, size):
+        self.size = size
+        self.items = [0.0] * self.size
+
+    def enqueue(self, item):
+        self.items.pop()
+        self.items.insert(0, item)
+
+    def dequeue(self):
+        self.items.insert(0, 0.0)
+        return self.items.pop()
+
+    def get_offset(self, index):
+        if 0 <= index <= self.size - 1:
+            return self.items[index]
+        else:
+            print 'Path index out of range'
+            return None
+
+    def set_offset(self, index, value):
+        if 0 <= index <= self.size - 1:
+            self.items[index] = value
+        else:
+            print 'Path index out of range'
+
+    def clear(self):
+        self.items = [0.0] * self.size
+
+
 class PID:
-    def __init__(self, robot):
+    def __init__(self, robot, path_queue):
         self.robot = robot
         self.base_speed = 150                               # Speed when moving straight :- affect the average speed
         self.pVar, self.iVar, self.dVar = 0.0, 0.0, 0.0     # Proportional, Integral and Derivative values
@@ -11,21 +41,23 @@ class PID:
         self.pre_error = 0.0                                # Previous error
         self.turn = 0.0
 
-    def calculate_error_from_offset(self, offset):
+        self.path_queue = path_queue
+        self.frame_width = float(self.robot.get_frame_width())
+
+    def calculate_error_from_offset(self):
         self.pre_error = self.error
-        ###########################
-        # Calculate the new error #
-        ###########################
+        path_x = self.path_queue.dequeue()
+        self.error = (self.frame_width / 2.0 - path_x) / self.frame_width * 20.0
 
     def calculate_sonar_error(self):
         total_width = self.robot.left_sonar + self.robot.width + self.robot.right_sonar
-        self.error = self.robot.left_sonar / total_width * 20 - 10.0
+        self.error = self.robot.left_sonar / total_width * 20.0 - 10.0
 
-    def run_pid(self, offset=None):
-        if offset is None:
-            self.calculate_sonar_error()
+    def run_pid(self, offset=False):
+        if offset:
+            self.calculate_error_from_offset()
         else:
-            self.calculate_error_from_offset(offset)
+            self.calculate_sonar_error()
 
         # Calculate P
         self.pVar = self.kp * self.error
