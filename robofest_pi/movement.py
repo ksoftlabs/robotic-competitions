@@ -11,7 +11,7 @@ class PID:
         self.pre_error = 0.0                                # Previous error
         self.turn = 0.0
 
-    def calculate_frame_error(self, frame):
+    def calculate_error_from_offset(self, offset):
         self.pre_error = self.error
         ###########################
         # Calculate the new error #
@@ -21,11 +21,11 @@ class PID:
         total_width = self.robot.left_sonar + self.robot.width + self.robot.right_sonar
         self.error = self.robot.left_sonar / total_width * 20 - 10.0
 
-    def run_pid(self, frame=None):
-        if frame is None:
+    def run_pid(self, offset=None):
+        if offset is None:
             self.calculate_sonar_error()
         else:
-            self.calculate_frame_error(frame)
+            self.calculate_error_from_offset(offset)
 
         # Calculate P
         self.pVar = self.kp * self.error

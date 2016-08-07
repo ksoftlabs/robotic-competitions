@@ -25,8 +25,8 @@ class Arrow:
             self.in2x = point_set[pos - 2][0][0]
             self.in2y = point_set[pos - 2][0][1]
 
-        self.midx = None
-        self.midy = None
+        self.midx = (self.i1x + self.i2x) / 2
+        self.midy = (self.i1y + self.i2y) / 2
 
     def is_valid_arrow(self):
         m1 = self.get_i0_to_i1_gradient()
@@ -48,10 +48,6 @@ class Arrow:
 
     def get_i2_to_i3_distance(self):
         return common.get_distance(self.i2x, self.i2y, self.i3x, self.i3y)
-
-    def calculate_mid_point(self):
-        self.midx = (self.i1x + self.i2x) / 2
-        self.midy = (self.i1y + self.i2y) / 2
 
     def draw_initial_point(self, frame, radius=4, color=(0, 255, 0), thickness=2):
         cv2.circle(frame, (self.i0x, self.i0y), radius, color, thickness)

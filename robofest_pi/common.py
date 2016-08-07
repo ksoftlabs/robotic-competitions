@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import math
 import psutil
-
 import global_values
 
 
@@ -37,6 +36,21 @@ def get_green_mask(frame_hsv):
 
 def get_blue_mask(frame_hsv):
     return cv2.inRange(frame_hsv, global_values.lower_blue, global_values.upper_blue)
+
+
+def apply_mask(original_frame, color='any'):
+    frame_hsv = cv2.cvtColor(original_frame, cv2.COLOR_BGR2HSV)
+
+    if color == 'red':
+        frame_mask = get_red_mask(frame_hsv)
+    elif color == 'green':
+        frame_mask = get_green_mask(frame_hsv)
+    elif color == 'blue':
+        frame_mask = get_blue_mask(frame_hsv)
+    else:       # Use all 3 colours for testing
+        frame_mask = get_red_mask(frame_hsv) + get_green_mask(frame_hsv) + get_blue_mask(frame_hsv)
+
+    return cv2.bitwise_and(original_frame, original_frame, mask=frame_mask)
 
 
 def get_normal_threshold(gray_img, min_val=70, max_val=255, thresh_type=cv2.THRESH_BINARY):

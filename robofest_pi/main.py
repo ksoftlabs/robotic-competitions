@@ -8,7 +8,6 @@ import path_logic
 import cv2
 import time
 import common
-import contour
 
 
 comm = communicate.Port()                           # Raspberry pi - Arduino serial communication interface
@@ -18,7 +17,7 @@ control = movement.Control(robot, comm)             # Robot movement controls
 
 maze = maze_logic.Maze(robot)                       # Maze logic
 box = box_logic.Box(robot)                          # Box logic
-path = path_logic.Path(robot)                       # Path logic
+path = path_logic.Path(robot, box)                  # Path logic
 
 #################################################################################################################
 # Testing area
@@ -26,36 +25,7 @@ while True:
     robot.see()
     start = time.time()
 
-    # Contours
-    frame_hsv = cv2.cvtColor(robot.current_frame, cv2.COLOR_BGR2HSV)
-
-    frame_mask = common.get_red_mask(frame_hsv) + common.get_green_mask(frame_hsv) + common.get_blue_mask(frame_hsv)
-    robot.processed_frame = cv2.bitwise_and(robot.current_frame, robot.current_frame, mask=frame_mask)
-
-    gray_img = cv2.cvtColor(robot.processed_frame, cv2.COLOR_BGR2GRAY)
-    threshold_img = common.get_otsu_gaussian_threshold(gray_img)
-
-    contours = common.get_contours(threshold_img)
-
-    for cnt in contours:
-        peri = cv2.arcLength(cnt, True)
-        approx = cv2.approxPolyDP(cnt, 0.01 * peri, True)
-        cv2.drawContours(robot.processed_frame, [approx], -1, (255, 0, 0), 2)
-
-        if len(approx) == 7:
-            for i in range(7):
-                arrow = contour.Arrow(approx, i)
-
-                if arrow.is_valid_arrow():
-                    arrow.calculate_mid_point()
-
-                    arrow.draw_initial_point(robot.processed_frame)
-                    arrow.draw_mid_base_point(robot.processed_frame)
-
-                    arrow.enable_lines(robot.processed_frame)
-                    arrow.enable_labels(robot.processed_frame)
-
-                    break
+    path.create_path()
 
     end = time.time()
     diff = end - start
@@ -67,7 +37,6 @@ while True:
     common.draw_machine_details(robot.processed_frame, fps)
 
     cv2.imshow('Feed', robot.current_frame)
-    cv2.imshow('Threshold image', gray_img)
     cv2.imshow('Processed feed', robot.processed_frame)
 
     if cv2.waitKey(1) % 256 == 27:
@@ -111,7 +80,7 @@ while True:
         #######################################################
         # Process the frame to create a path from arrow heads #
         #######################################################
-        pid.run_pid(robot.processed_frame)
+        # pid.run_pid('offset')
         control.drive()
     elif robot.state == 'box_place':
         #######################################
