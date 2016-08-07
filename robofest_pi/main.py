@@ -55,6 +55,8 @@ while True:
                     arrow.enable_lines(robot.processed_frame)
                     arrow.enable_labels(robot.processed_frame)
 
+                    break
+
     end = time.time()
     diff = end - start
     if diff == 0:
