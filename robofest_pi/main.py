@@ -82,29 +82,14 @@ while True:
 
     if robot.state == 'maze':
         robot.update_sonar_data()
-
         if box.is_box_seen():
-            #################################################################
-            ls = box.left_shifting()        #distance to left from the center
-            rs = box.right_shifting()       #distance to right from the center
-            if ls > 0:
-                control.turn_left()
-            elif rs > 0:
-                control.turn_right()
-            else:
-                ### Go to the box ###
-                robot.state = 'box_lift'  
-            #################################################################
-            
-            #if box.is_box_totally_visible():
-                #robot.state = 'box_lift'
-            #elif box.is_box_partially_visible():
-                ######################
-                ## Adjust the course #
-                ######################
-                #pass
-
-                
+            if box.is_box_totally_visible():
+                robot.state = 'box_lift'
+            elif box.is_box_partially_visible():
+                #####################
+                # Adjust the course #
+                #####################
+                pass
         elif maze.is_on_junction():
             if maze.is_left_open():
                 control.turn_left()
