@@ -11,7 +11,7 @@ import common
 
 
 comm = communicate.Port()                           # Raspberry pi - Arduino serial communication interface
-robot = physics.Robot(comm, '192.168.1.2:8080')     # Define current robot state
+robot = physics.Robot(comm, '192.168.1.4:8080')     # Define current robot state
 pid = movement.PID(robot)                           # Adjust course through pid
 control = movement.Control(robot, comm)             # Robot movement controls
 
@@ -38,6 +38,7 @@ while True:
 
     cv2.imshow('Feed', robot.current_frame)
     cv2.imshow('Processed feed', robot.processed_frame)
+    cv2.imshow('Threshold image', path.threshold_img)
 
     if cv2.waitKey(1) % 256 == 27:
         break
