@@ -1,6 +1,42 @@
 from time import sleep
 
 
+class PathQueue:
+
+    # Path Queue (size: 100)
+    # 99          0
+    # .           .
+    # .           .
+    # .           .
+    # 4                       9
+    # 3                   7
+    # 2       -2
+    # 1   -5
+    # 0           0
+
+    def __init__(self, size):
+        self.size = size
+        self.items = [0.0] * self.size
+
+    def enqueue(self, item):
+        self.items.pop(0)
+        self.items.append(item)
+
+    def dequeue(self):
+        self.items.append(0.0)
+        return self.items.pop(0)
+
+    def get_offset(self, index):
+        if 0 <= index <= self.size - 1:
+            return self.items[index]
+        else:
+            print 'Path index out of range'
+            return None
+
+    def clear(self):
+        self.items = [0.0] * self.size
+
+
 class PID:
     def __init__(self, robot):
         self.robot = robot
@@ -11,21 +47,23 @@ class PID:
         self.pre_error = 0.0                                # Previous error
         self.turn = 0.0
 
-    def calculate_error_from_offset(self, offset):
+        self.path_queue = PathQueue(robot.get_frame_height())
+        self.frame_width = float(self.robot.get_frame_width())
+
+    def calculate_error_from_offset(self):
         self.pre_error = self.error
-        ###########################
-        # Calculate the new error #
-        ###########################
+        current_offset = self.path_queue.dequeue()
+        self.error = current_offset / self.frame_width * 10
 
     def calculate_sonar_error(self):
         total_width = self.robot.left_sonar + self.robot.width + self.robot.right_sonar
         self.error = self.robot.left_sonar / total_width * 20 - 10.0
 
-    def run_pid(self, offset=None):
-        if offset is None:
-            self.calculate_sonar_error()
+    def run_pid(self, offset=False):
+        if offset:
+            self.calculate_error_from_offset()
         else:
-            self.calculate_error_from_offset(offset)
+            self.calculate_sonar_error()
 
         # Calculate P
         self.pVar = self.kp * self.error

@@ -81,7 +81,7 @@ while True:
         #######################################################
         # Process the frame to create a path from arrow heads #
         #######################################################
-        # pid.run_pid('offset')
+        pid.run_pid(offset=True)
         control.drive()
     elif robot.state == 'box_place':
         #######################################

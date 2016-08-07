@@ -3,42 +3,6 @@ import contour
 import common
 
 
-class PathQueue:
-
-    # Path Queue (size: 100)
-    # 99          0
-    # .           .
-    # .           .
-    # .           .
-    # 4                       9
-    # 3                   7
-    # 2       -2
-    # 1   -5
-    # 0           0
-
-    def __init__(self, size):
-        self.size = size
-        self.items = [0.0] * self.size
-
-    def enqueue(self, item):
-        self.items.pop(0)
-        self.items.append(item)
-
-    def dequeue(self):
-        self.items.append(0.0)
-        return self.items.pop(0)
-
-    def get_offset(self, index):
-        if 0 <= index <= self.size - 1:
-            return self.items[index]
-        else:
-            print 'Path index out of range'
-            return None
-
-    def clear(self):
-        self.items = [0.0] * self.size
-
-
 class Path:
     def __init__(self, robot, box):
         self.robot = robot
