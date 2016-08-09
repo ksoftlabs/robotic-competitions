@@ -23,15 +23,12 @@ path = path_logic.Path(robot, path_queue, box)              # Path logic
 
 #################################################################################################################
 # Testing area
-
-frame_width = robot.get_frame_width()
-frame_height = robot.get_frame_height()
-
 while True:
-    robot.see('arrows.png')
+    robot.see('red_arrow.png')
     start = time.time()
 
     path.create_path()
+    path.path_queue.draw_path(robot.get_frame_width(), robot.get_frame_height())
 
     end = time.time()
     diff = end - start
@@ -41,11 +38,8 @@ while True:
     fps = 1.0 / diff
 
     common.draw_machine_details(robot.processed_frame, fps)
-    common.draw_crosshair(robot.processed_frame, width=frame_width, height=frame_height)
+    common.draw_crosshair(robot.processed_frame)
 
-    cv2.namedWindow('Feed', cv2.WINDOW_NORMAL)
-    cv2.namedWindow('Processed feed', cv2.WINDOW_NORMAL)
-    cv2.namedWindow('Threshold image', cv2.WINDOW_NORMAL)
     cv2.imshow('Feed', robot.current_frame)
     cv2.imshow('Processed feed', robot.processed_frame)
     cv2.imshow('Threshold image', path.threshold_img)
@@ -101,8 +95,6 @@ while True:
     else:       # state == 'stop' or unknown state
         control.stop()
 
-    cv2.namedWindow('Feed', cv2.WINDOW_NORMAL)
-    cv2.namedWindow('Processed feed', cv2.WINDOW_NORMAL)
     cv2.imshow('Feed', robot.current_frame)
     cv2.imshow('Processed feed', robot.processed_frame)
 

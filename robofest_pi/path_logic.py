@@ -17,7 +17,7 @@ class Path:
     def create_path(self):
         self.robot.processed_frame = self.refine_current_view()
 
-        contours = common.get_contours(self.threshold_img)
+        contours = common.get_contours(self.threshold_img.copy())
         arrow_list = self.find_arrows(contours)
 
         for arrow in arrow_list:
@@ -38,10 +38,12 @@ class Path:
                         x = self.frame_width
                     else:                           # Points West
                         x = 0
+                    print 'm'
                 elif m == float('Inf') or m == float('-Inf'):
                     x = (arrow.in2x + arrow.midx) / 2.0
+                    print 'k'
                 else:
-                    x = y - c / m
+                    x = (y - c) / m
 
                 self.path_queue.set_offset(y, x)
 
