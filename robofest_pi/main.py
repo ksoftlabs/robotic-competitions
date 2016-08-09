@@ -43,6 +43,9 @@ while True:
     common.draw_machine_details(robot.processed_frame, fps)
     common.draw_crosshair(robot.processed_frame, width=frame_width, height=frame_height)
 
+    cv2.namedWindow('Feed', cv2.WINDOW_NORMAL)
+    cv2.namedWindow('Processed feed', cv2.WINDOW_NORMAL)
+    cv2.namedWindow('Threshold image', cv2.WINDOW_NORMAL)
     cv2.imshow('Feed', robot.current_frame)
     cv2.imshow('Processed feed', robot.processed_frame)
     cv2.imshow('Threshold image', path.threshold_img)
@@ -98,6 +101,8 @@ while True:
     else:       # state == 'stop' or unknown state
         control.stop()
 
+    cv2.namedWindow('Feed', cv2.WINDOW_NORMAL)
+    cv2.namedWindow('Processed feed', cv2.WINDOW_NORMAL)
     cv2.imshow('Feed', robot.current_frame)
     cv2.imshow('Processed feed', robot.processed_frame)
 

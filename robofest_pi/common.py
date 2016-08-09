@@ -23,8 +23,7 @@ def draw_crosshair(frame, width=None, height=None):
     cv2.line(frame, (0, height / 2), (width, height / 2), (255, 255, 255), 1)
 
     print width / 2
-    cv2.putText(frame, str('x'), (width / 2, height / 2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-                    (255, 255, 255))
+    cv2.putText(frame, str('x'), (width / 2, height / 2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 255, 255))
 
 
 def div(numerator, denominator):
