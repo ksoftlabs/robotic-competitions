@@ -56,7 +56,7 @@ class Arrow:
         return common.get_gradient(self.in2x, self.in2y, self.midx, self.midy)
 
     def get_main_axis_intercept(self):
-        return common.div((self.in2y * self.midx - self.midy * self.in2x), float(self.midx - self.in2x))
+        return common.div(float(self.midx - self.in2x), (self.in2y * self.midx - self.midy * self.in2x))
 
     def draw_initial_point(self, frame, radius=4, color=(255, 255, 255), thickness=2):
         cv2.circle(frame, (self.i0x, self.i0y), radius, color, thickness)
@@ -76,16 +76,16 @@ class Arrow:
         # cv2.line(frame, (self.i2x, self.i2y), (self.i3x, self.i3y), (255, 255, 255), 2)
 
     def enable_labels(self, frame):
-        # cv2.putText(frame, str(self.pos - 2), (self.in2x + 10, self.in2y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-        #             (255, 255, 255))
+        cv2.putText(frame, str(self.pos - 2), (self.in2x + 10, self.in2y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
+                    (255, 255, 255))
         cv2.putText(frame, str(self.pos), (self.i0x + 10, self.i0y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
                     (255, 255, 255))
-        # cv2.putText(frame, str(self.pos + 1), (self.i1x + 10, self.i1y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-        #             (255, 255, 255))
-        # cv2.putText(frame, str(self.pos + 2), (self.i2x + 10, self.i2y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-        #             (255, 255, 255))
-        # cv2.putText(frame, str(self.pos + 3), (self.i3x + 10, self.i3y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
-        #             (255, 255, 255))
+        cv2.putText(frame, str(self.pos + 1), (self.i1x + 10, self.i1y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
+                    (255, 255, 255))
+        cv2.putText(frame, str(self.pos + 2), (self.i2x + 10, self.i2y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
+                    (255, 255, 255))
+        cv2.putText(frame, str(self.pos + 3), (self.i3x + 10, self.i3y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
+                    (255, 255, 255))
         cv2.putText(frame, str('HEAD'), (self.in2x + 20, self.in2y + 20), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
                     (255, 255, 255))
         cv2.putText(frame, str('BASE'), (self.midx + 20, self.midy + 20), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,

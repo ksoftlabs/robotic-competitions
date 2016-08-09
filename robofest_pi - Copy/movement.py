@@ -1,7 +1,4 @@
-import cv2
-import numpy as np
 from time import sleep
-import common
 
 
 class PathQueue:
@@ -32,15 +29,6 @@ class PathQueue:
 
     def clear(self):
         self.items = [0.0] * self.size
-
-    def draw_path(self, width, height):
-        canvas = np.empty([height, width], dtype=np.uint8)
-
-        for i in range(height):
-            canvas[i, int(self.get_offset(i))] = 255
-
-        common.draw_crosshair(canvas)
-        cv2.imshow('Path', canvas)
 
 
 class PID:
