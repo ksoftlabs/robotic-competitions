@@ -74,8 +74,8 @@ while True:
         elif maze.is_on_end():
             control.turn_back()
         else:
-            control.stop()  # Logic error
-
+            pid.run_pid()
+            control.drive()
     elif robot.state == 'box_lift':
         ######################################
         # Position the robot to lift the box #

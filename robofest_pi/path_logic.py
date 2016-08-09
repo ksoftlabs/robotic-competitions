@@ -38,10 +38,8 @@ class Path:
                         x = self.frame_width
                     else:                           # Points West
                         x = 0
-                    print 'm'
                 elif m == float('Inf') or m == float('-Inf'):
                     x = (arrow.in2x + arrow.midx) / 2.0
-                    print 'k'
                 else:
                     x = (y - c) / m
 
