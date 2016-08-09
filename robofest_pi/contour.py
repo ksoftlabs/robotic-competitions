@@ -6,24 +6,24 @@ class Arrow:
     def __init__(self, point_set, pos):             # pos is the position of the required point (starting position)
         self.pos = pos
 
-        self.i0x = point_set[pos][0][1]
-        self.i0y = point_set[pos][0][0]
-        self.i1x = point_set[(pos + 1) % 6][0][1]
-        self.i1y = point_set[(pos + 1) % 6][0][0]
-        self.i2x = point_set[(pos + 2) % 6][0][1]
-        self.i2y = point_set[(pos + 2) % 6][0][0]
-        self.i3x = point_set[(pos + 3) % 6][0][1]
-        self.i3y = point_set[(pos + 3) % 6][0][0]
+        self.i0x = point_set[pos][0][0]
+        self.i0y = point_set[pos][0][1]
+        self.i1x = point_set[(pos + 1) % 6][0][0]
+        self.i1y = point_set[(pos + 1) % 6][0][1]
+        self.i2x = point_set[(pos + 2) % 6][0][0]
+        self.i2y = point_set[(pos + 2) % 6][0][1]
+        self.i3x = point_set[(pos + 3) % 6][0][0]
+        self.i3y = point_set[(pos + 3) % 6][0][1]
 
         if pos == 0:
-            self.in2x = point_set[5][0][1]
-            self.in2y = point_set[5][0][0]
+            self.in2x = point_set[5][0][0]
+            self.in2y = point_set[5][0][1]
         elif pos == 1:
-            self.in2x = point_set[6][0][1]
-            self.in2y = point_set[6][0][0]
+            self.in2x = point_set[6][0][0]
+            self.in2y = point_set[6][0][1]
         else:
-            self.in2x = point_set[pos - 2][0][1]
-            self.in2y = point_set[pos - 2][0][0]
+            self.in2x = point_set[pos - 2][0][0]
+            self.in2y = point_set[pos - 2][0][1]
 
         self.midx = (self.i1x + self.i2x) / 2
         self.midy = (self.i1y + self.i2y) / 2
@@ -58,18 +58,26 @@ class Arrow:
     def get_main_axis_intercept(self):
         return common.div(float(self.midx - self.in2x), (self.in2y * self.midx - self.midy * self.in2x))
 
-    def draw_initial_point(self, frame, radius=4, color=(0, 255, 0), thickness=2):
+    def draw_initial_point(self, frame, radius=4, color=(255, 255, 255), thickness=2):
         cv2.circle(frame, (self.i0x, self.i0y), radius, color, thickness)
 
-    def draw_mid_base_point(self, frame, radius=4, color=(0, 255, 0), thickness=2):
+    def draw_mid_base_point(self, frame, radius=4, color=(255, 255, 255), thickness=2):
         cv2.circle(frame, (self.midx, self.midy), radius, color, thickness)
 
+    def draw_head_point(self, frame, radius=4, color=(255, 255, 255), thickness=2):
+        cv2.circle(frame, (self.in2x, self.in2y), radius, color, thickness)
+
     def enable_lines(self, frame):
-        cv2.line(frame, (self.midx, self.midy), (self.in2x, self.in2y), (0, 255, 0), 2)
-        cv2.line(frame, (self.i0x, self.i0y), (self.i1x, self.i1y), (255, 255, 255), 2)
-        cv2.line(frame, (self.i2x, self.i2y), (self.i3x, self.i3y), (255, 255, 255), 2)
+        # Mid line
+        cv2.line(frame, (self.midx, self.midy), (self.in2x, self.in2y), (255, 255, 255), 2)
+
+        # Side lines
+        # cv2.line(frame, (self.i0x, self.i0y), (self.i1x, self.i1y), (255, 255, 255), 2)
+        # cv2.line(frame, (self.i2x, self.i2y), (self.i3x, self.i3y), (255, 255, 255), 2)
 
     def enable_labels(self, frame):
+        cv2.putText(frame, str(self.pos - 2), (self.in2x + 10, self.in2y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
+                    (255, 255, 255))
         cv2.putText(frame, str(self.pos), (self.i0x + 10, self.i0y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
                     (255, 255, 255))
         cv2.putText(frame, str(self.pos + 1), (self.i1x + 10, self.i1y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
@@ -78,7 +86,7 @@ class Arrow:
                     (255, 255, 255))
         cv2.putText(frame, str(self.pos + 3), (self.i3x + 10, self.i3y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
                     (255, 255, 255))
-        cv2.putText(frame, str('HEAD'), (self.in2x + 10, self.in2y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
+        cv2.putText(frame, str('HEAD'), (self.in2x + 20, self.in2y + 20), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
                     (255, 255, 255))
-        cv2.putText(frame, str('BASE'), (self.midx + 10, self.midy + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
+        cv2.putText(frame, str('BASE'), (self.midx + 20, self.midy + 20), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
                     (255, 255, 255))

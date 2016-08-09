@@ -23,6 +23,7 @@ class Path:
         for arrow in arrow_list:
             arrow.draw_initial_point(self.robot.processed_frame)
             arrow.draw_mid_base_point(self.robot.processed_frame)
+            arrow.draw_head_point(self.robot.processed_frame)
             arrow.enable_lines(self.robot.processed_frame)
             arrow.enable_labels(self.robot.processed_frame)
 
@@ -64,7 +65,7 @@ class Path:
         for cnt in contours:
             peri = cv2.arcLength(cnt, True)
             approx = cv2.approxPolyDP(cnt, 0.01 * peri, True)
-            cv2.drawContours(self.robot.processed_frame, [approx], -1, (255, 0, 0), 2)
+            cv2.drawContours(self.robot.processed_frame, [approx], -1, (0, 255, 0), 2)
 
             if len(approx) == 7:
                 for i in range(7):

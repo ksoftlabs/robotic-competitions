@@ -13,6 +13,20 @@ def draw_machine_details(frame, fps):
     cv2.putText(frame, 'Memory usage ' + str(mem), (10, 70), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8, (255, 0, 0))
 
 
+def draw_crosshair(frame, width=None, height=None):
+    if width is None:
+        width = frame.shape[1]
+    if height is None:
+        height = frame.shape[0]
+
+    # cv2.line(frame, (width / 2, 0), (width / 2, height), (255, 255, 255), 1)
+    cv2.line(frame, (0, height / 2), (width, height / 2), (255, 255, 255), 1)
+
+    print width / 2
+    cv2.putText(frame, str('x'), (width / 2, height / 2), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.8,
+                    (255, 255, 255))
+
+
 def div(numerator, denominator):
     if denominator == 0.0:
         if numerator > 0:

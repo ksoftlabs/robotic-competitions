@@ -18,14 +18,14 @@ class PathQueue:
         if 0 <= index <= self.size - 1:
             return self.items[index]
         else:
-            print 'Path index out of range'
+            print 'Path index out of range: ' + str(index)
             return None
 
     def set_offset(self, index, value):
         if 0 <= index <= self.size - 1:
             self.items[index] = value
         else:
-            print 'Path index out of range'
+            print 'Path index out of range: ' + str(index)
 
     def clear(self):
         self.items = [0.0] * self.size
