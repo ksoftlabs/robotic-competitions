@@ -153,5 +153,3 @@ class Box:
         cv2.imshow("Box View", frame)
 
 
-
-
