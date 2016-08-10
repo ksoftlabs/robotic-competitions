@@ -9,7 +9,6 @@ import cv2
 import time
 import common
 
-
 comm = communicate.Port()                                   # Raspberry pi - Arduino serial communication interface
 # robot = physics.Robot(comm, '192.168.1.4:8080')             # Define current robot state
 robot = physics.Robot(comm)                                 # Define current robot state
