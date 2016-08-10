@@ -2,6 +2,7 @@
   <dictionary name="Oshan">
     <words>
       <w>arduino</w>
+      <w>crosshair</w>
       <w>dequeue</w>
       <w>otsu</w>
       <w>thresholding</w>
