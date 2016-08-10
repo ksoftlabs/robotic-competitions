@@ -1,13 +1,10 @@
+import cv2
 import physics
 import communicate
 import movement
 import maze_logic
 import box_logic
 import path_logic
-
-import cv2
-import time
-import common
 
 comm = communicate.Port()                                   # Raspberry pi - Arduino serial communication interface
 # robot = physics.Robot(comm, '192.168.1.4:8080')             # Define current robot state
@@ -19,36 +16,6 @@ control = movement.Control(robot, comm)                     # Robot movement con
 maze = maze_logic.Maze(robot)                               # Maze logic
 box = box_logic.Box(robot)                                  # Box logic
 path = path_logic.Path(robot, path_queue, box)              # Path logic
-
-#################################################################################################################
-# Testing area
-while True:
-    robot.see('red_arrow.png')
-    start = time.time()
-
-    path.create_path()
-    path.path_queue.draw_path(robot.get_frame_width(), robot.get_frame_height())
-
-    end = time.time()
-    diff = end - start
-    if diff == 0:
-        diff = 0.0000001
-
-    fps = 1.0 / diff
-
-    common.draw_machine_details(robot.processed_frame, fps)
-    common.draw_crosshair(robot.processed_frame)
-
-    cv2.imshow('Feed', robot.current_frame)
-    cv2.imshow('Processed feed', robot.processed_frame)
-    cv2.imshow('Threshold image', path.threshold_img)
-
-    if cv2.waitKey(1) % 256 == 27:
-        break
-robot.cam.release()
-cv2.destroyAllWindows()
-exit(0)
-##################################################################################################################
 
 while True:
     robot.see()
